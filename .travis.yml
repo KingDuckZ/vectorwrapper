@@ -1,7 +1,5 @@
 language: cpp
 compiler: gcc
-script: 
-    - mkdir build 
-    - cd build 
+script:
     - cmake -GCMAKE_BUILD_TYPE=Debug ../test && make
     - ./unit/unit --gtest_filter='*.*'
