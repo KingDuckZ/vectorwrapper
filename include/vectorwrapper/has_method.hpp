@@ -45,10 +45,11 @@
 	private: \
 		struct TrueType { int a[2]; }; \
 		typedef int FalseType; \
-		template <typename C> static TrueType has_enum ( int = C::enum_name ); \
+		template <int> void f ( void ); \
+		template <typename C> static TrueType has_enum ( decltype(&f<C::enum_name>) = nullptr ); \
 		template <typename C> static FalseType has_enum ( ... ); \
 	public:\
-		enum { value = sizeof(has_enum<T>(0)) == sizeof(TrueType) }; \
+		enum { value = sizeof(has_enum<T>(nullptr)) == sizeof(TrueType) }; \
 	}
 
 #endif
