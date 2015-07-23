@@ -17,7 +17,8 @@
 namespace vwr {
 	namespace implem {
 		template <typename V>
-		VecBase<V>::VecBase (scalar_type parInit) :
+		template <typename T>
+		VecBase<V>::VecBase (const typename std::enable_if<std::is_same<T, scalar_type>::value and not std::is_same<scalar_type, vector_type>::value, T>::type& parInit) :
 			m_wrapped(parInit)
 		{
 		}
@@ -121,7 +122,7 @@ namespace vwr {
 		template <typename T>
 		typename VectorWrapperInfo<T>::scalar_type& VecGetter<T, false>::get_at (typename VectorWrapperInfo<T>::vector_type& parVec, std::size_t parIndex) {
 			assert(parIndex < VectorWrapperInfo<T>::dimensions);
-			return VectorWrapperInfo<T>::get_at(parVec, parIndex);
+			return VectorWrapperInfo<T>::get_at(parIndex, parVec);
 		}
 
 		template <typename V1, typename V2, std::size_t D>

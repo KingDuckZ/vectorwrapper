@@ -56,7 +56,7 @@ In this example we will adapt `std::array<float, N>` and `Ogre::VectorN`. In you
     //Include Vec's header
     #include "vectorwrapper.hpp"
     #include <array>
-    #include <stddef.h>
+    #include <cstddef>
     
     template <>
     struct VectorWrapperInfo<std::array<float, 3>> {
@@ -74,7 +74,7 @@ In this example we will adapt `std::array<float, N>` and `Ogre::VectorN`. In you
         //This will make the xy(), xz() and yz() methods available
         typedef std::array<float, 2> lower_vector_type;
         
-        scalar_type& get_at (size_t parIndex, vector_type& parVector) {
+        static scalar_type& get_at (size_t parIndex, vector_type& parVector) {
             //parIndex is already asserted to be < dimensions
             //so you can always assume it's valid.
             return parVector[parIndex];
@@ -92,7 +92,7 @@ In this example we will adapt `std::array<float, N>` and `Ogre::VectorN`. In you
         typedef std::array<float, 3> higher_vector_type;
         typedef std::array<float, 1> lower_vector_type;
         
-        scalar_type& get_at (size_t parIndex, vector_type& parVector) {
+        static scalar_type& get_at (size_t parIndex, vector_type& parVector) {
             return parVector[parIndex];
         }
     };
@@ -108,7 +108,7 @@ In this example we will adapt `std::array<float, N>` and `Ogre::VectorN`. In you
         typedef float vector_type;
         typedef std::array<float, 2> higher_vector_type;
         
-        scalar_type& get_at (size_t, vector_type& parVector) {
+        static scalar_type& get_at (size_t, vector_type& parVector) {
             return parVector;
         }
     };
@@ -131,7 +131,7 @@ In this example we will adapt `std::array<float, N>` and `Ogre::VectorN`. In you
         //certain casts that would be disabled if you provided
         //the get_at() method instead.
         enum {
-            offset_x = offestof(Ogre::Vector3, x),
+            offset_x = offsetof(Ogre::Vector3, x),
             offset_y = offsetof(Ogre::Vector3, y),
             offset_z = offsetof(Ogre::Vector3, z)
         };
@@ -148,7 +148,7 @@ In this example we will adapt `std::array<float, N>` and `Ogre::VectorN`. In you
         typedef Ogre::Vector3 higher_vector_type;
         
         enum {
-            offset_x = offestof(Ogre::Vector3, x),
+            offset_x = offsetof(Ogre::Vector3, x),
             offset_y = offsetof(Ogre::Vector3, y)
         };
     };

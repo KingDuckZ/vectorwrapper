@@ -35,7 +35,7 @@ namespace vwr {
 	namespace implem {
 		define_has_typedef(lower_vector_type, LowerVec);
 		define_has_typedef(higher_vector_type, HigherVec);
-		define_has_enum(vector_x, VectorX);
+		define_has_enum(offset_x, OffsetX);
 		define_has_method(get_at, GetAt);
 
 		template <typename V1, typename V2, std::size_t D>
@@ -77,9 +77,9 @@ namespace vwr {
 		struct have_same_layout {
 			enum {
 				value =
-					HasVectorXEnum<T>::value and HasVectorXEnum<U>::value and
+					HasOffsetXEnum<T>::value and HasOffsetXEnum<U>::value and
 					VectorWrapperInfo<T>::dimensions == VectorWrapperInfo<U>::dimensions and
-					have_same_offsets<T, U>::value;
+					have_same_offsets<T, U>::value
 			};
 		};
 
@@ -102,7 +102,8 @@ namespace vwr {
 			};
 
 			VecBase ( void ) = default;
-			explicit VecBase ( scalar_type parInit );
+			template <typename T>
+			explicit VecBase ( const typename std::enable_if<std::is_same<T, scalar_type>::value and not std::is_same<scalar_type, vector_type>::value, T>::type& parInit );
 			explicit VecBase ( const vector_type& parInit );
 			template <typename... Args>
 			VecBase ( scalar_type parX, scalar_type parY, Args... parArgs );
@@ -152,7 +153,7 @@ namespace vwr {
 			const std::array<unsigned int, S> offsets;
 		};
 
-		template <typename T, bool=HasVectorXEnum<VectorWrapperInfo<T>>::value and std::is_standard_layout<typename VectorWrapperInfo<T>::vector_type>::value>
+		template <typename T, bool=HasOffsetXEnum<VectorWrapperInfo<T>>::value and std::is_standard_layout<typename VectorWrapperInfo<T>::vector_type>::value>
 		class VecGetter;
 		template <typename T>
 		struct VecGetter<T, true> {
@@ -162,7 +163,8 @@ namespace vwr {
 		struct VecGetter<T, false> {
 		private:
 			static_assert(HasGetAtMethod<VectorWrapperInfo<T>>::value, "You must provide a get_at() static method for this vector_type");
-			typedef decltype(&VectorWrapperInfo<T>::get_at) get_at_func;
+			typedef typename VectorWrapperInfo<T>::scalar_type scalar_type;
+			using get_at_func = decltype(&VectorWrapperInfo<T>::get_at)(std::size_t, scalar_type&);
 			static_assert(not std::is_rvalue_reference<typename std::result_of<get_at_func>::type>::value, "rvalue ref return types not implemented");
 			static_assert(std::is_lvalue_reference<typename std::result_of<get_at_func>::type>::value, "Read-only vectors not implemented");
 
@@ -261,7 +263,8 @@ namespace vwr {
 		Vec ( void ) = default;
 		Vec ( const Vec& ) = default;
 		explicit Vec ( const vector_type& parIn ) : implem::VecBase<V>(parIn) { }
-		explicit Vec ( const scalar_type parX ) : implem::VecBase<V>(parX) { }
+		template <typename T>
+		explicit Vec ( const typename std::enable_if<std::is_same<T, scalar_type>::value and not std::is_same<scalar_type, vector_type>::value, T>::type& parX ) : implem::VecBase<V>(parX) { }
 		template <typename V2> Vec ( const Vec<V2, dimensions>& parOther ) { implem::assign(*this, parOther); }
 
 		scalar_type& x ( void ) { return (*this)[0]; }
