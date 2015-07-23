@@ -1,4 +1,7 @@
 # Vector Wrapper #
+## Build status ##
+![Image Build status](https://travis-ci.org/KingDuckZ/vectorwrapper.svg?branch=master)
+
 ## Motivation ##
 We all need vectors in our code, and there are quite a few implementations out there. They all do their job, and in terms of interface they are pretty similar to each other, but not *exactly* the same thing.
 While this is not an issue in its own, it can become a problem when your code depends on external libraries that will provide their own vector implementation. So you might have your own implementation, MyVector, and the library will give you Ogre::Vector3, which is what you must use when you invoke Ogre's functions. If you also depend on openCV you will have yet another vector around. Microsoft Kinect SDK also imposes you its own, barebone vector implementation.

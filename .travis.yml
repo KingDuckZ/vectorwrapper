@@ -1,5 +1,5 @@
 language: cpp
 compiler: gcc
 script:
-    - cmake -DCMAKE_BUILD_TYPE=Debug ../test && make
+    - cmake -DCMAKE_BUILD_TYPE=Debug test/ && make
     - ./unit/unit --gtest_filter='*.*'
