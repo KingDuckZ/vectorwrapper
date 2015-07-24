@@ -172,6 +172,20 @@ namespace vwr {
 			static typename VectorWrapperInfo<T>::scalar_type& get_at ( T& parVec, std::size_t parIndex );
 		};
 
+		template <typename V, bool Enabled> struct Vec1Promotion;
+		template <typename V> struct Vec1Promotion<V, false> { };
+		template <typename V> struct Vec1Promotion<V, true> {
+			typedef Vec<typename VectorWrapperInfo<V>::higher_vector_type> higher_vector_type;
+			typedef typename VectorWrapperInfo<V>::scalar_type scalar_type;
+
+			static_assert(VectorWrapperInfo<typename VectorWrapperInfo<V>::higher_vector_type>::dimensions == 2, "Wrong promoted vector type");
+
+			higher_vector_type x1 ( void ) const { return xn(scalar_type(1)); }
+			higher_vector_type x0 ( void ) const { return xn(scalar_type(0)); }
+			higher_vector_type xn ( const scalar_type& parN ) const;
+			higher_vector_type nx ( const scalar_type& parN ) const;
+		};
+
 		template <typename V, bool Enabled> struct Vec2Promotion;
 		template <typename V> struct Vec2Promotion<V, false> {};
 		template <typename V> struct Vec2Promotion<V, true> {
@@ -180,9 +194,9 @@ namespace vwr {
 
 			static_assert(VectorWrapperInfo<typename VectorWrapperInfo<V>::higher_vector_type>::dimensions == 3, "Wrong promoted vector type");
 
-			higher_vector_type xy1 ( void ) const { return xyz(scalar_type(1)); }
-			higher_vector_type xy0 ( void ) const { return xyz(scalar_type(0)); }
-			higher_vector_type xyz ( const scalar_type& parZ ) const;
+			higher_vector_type xy1 ( void ) const { return xyn(scalar_type(1)); }
+			higher_vector_type xy0 ( void ) const { return xyn(scalar_type(0)); }
+			higher_vector_type xyn ( const scalar_type& parZ ) const;
 		};
 
 		template <typename V, bool Enabled> struct Vec3Promotion;
@@ -239,6 +253,13 @@ namespace vwr {
 			scalar_type& x ( void );
 			scalar_type& y ( void );
 		};
+
+		template <typename V>
+		struct VecAccessors<V, 1> : Vec1Promotion<V, HasHigherVecTypedef<VectorWrapperInfo<V>>::value> {
+			typedef typename VectorWrapperInfo<V>::scalar_type scalar_type;
+			scalar_type& x ( void );
+			const scalar_type& x ( void ) const;
+		};
 	} //namespace implem
 
 	template <typename V, std::size_t S>
@@ -250,7 +271,8 @@ namespace vwr {
 	};
 
 	template <typename V>
-	class Vec<V, 1> : public implem::VecBase<V> {
+	class Vec<V, 1> : public implem::VecBase<V>, public implem::VecAccessors<V, 1> {
+		static_assert(std::is_standard_layout<implem::VecBase<V>>::value, "Base class must be a standard layout type");
 		typedef typename implem::VecBase<V>::vector_type vector_type;
 		typedef typename implem::VecBase<V>::scalar_type scalar_type;
 	public:
@@ -266,9 +288,6 @@ namespace vwr {
 		template <typename T>
 		explicit Vec ( const typename std::enable_if<std::is_same<T, scalar_type>::value and not std::is_same<scalar_type, vector_type>::value, T>::type& parX ) : implem::VecBase<V>(parX) { }
 		template <typename V2> Vec ( const Vec<V2, dimensions>& parOther ) { implem::assign(*this, parOther); }
-
-		scalar_type& x ( void ) { return (*this)[0]; }
-		const scalar_type& x ( void ) const { return (*this)[0]; }
 
 		Vec& operator= ( const Vec& parOther ) { return implem::assign_same_type(*this, parOther); }
 		template <typename V2>

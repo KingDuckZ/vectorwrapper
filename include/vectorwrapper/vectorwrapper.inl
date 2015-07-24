@@ -164,15 +164,39 @@ namespace vwr {
 		}
 
 		template <typename V>
-		auto Vec2Promotion<V, true>::xyz (const scalar_type& parZ) const -> higher_vector_type {
+		auto Vec1Promotion<V, true>::xn (const scalar_type& parN) const -> higher_vector_type {
 			auto& this_vec = *static_cast<const Vec<V>*>(this);
-			return higher_vector_type(this_vec[0], this_vec[1], parZ);
+			return higher_vector_type(this_vec[0], parN);
+		}
+
+		template <typename V>
+		auto Vec1Promotion<V, true>::nx (const scalar_type& parN) const -> higher_vector_type {
+			auto& this_vec = *static_cast<const Vec<V>*>(this);
+			return higher_vector_type(parN, this_vec[0]);
+		}
+
+		template <typename V>
+		auto Vec2Promotion<V, true>::xyn (const scalar_type& parN) const -> higher_vector_type {
+			auto& this_vec = *static_cast<const Vec<V>*>(this);
+			return higher_vector_type(this_vec[0], this_vec[1], parN);
 		}
 
 		template <typename V>
 		auto Vec3Promotion<V, true>::xyzw (const scalar_type& parW) const -> higher_vector_type {
 			auto& this_vec = *static_cast<const Vec<V>*>(this);
 			return higher_vector_type(this_vec[0], this_vec[1], this_vec[2], parW);
+		}
+
+		template <typename V>
+		auto VecAccessors<V, 1>::x() -> scalar_type& {
+			auto& this_vec = *static_cast<Vec<V>*>(this);
+			return this_vec[0];
+		}
+
+		template <typename V>
+		auto VecAccessors<V, 1>::x() const -> const scalar_type& {
+			const auto& this_vec = *static_cast<const Vec<V>*>(this);
+			return this_vec[0];
 		}
 
 		template <typename V>
