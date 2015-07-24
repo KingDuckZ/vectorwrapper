@@ -166,6 +166,10 @@ namespace vwr {
 	//Vector Wrapper debug assertions
 	static_assert(not implem::HasOffsetXEnum<VectorWrapperInfo<float>>::value, "Should return false");
 	static_assert(implem::HasOffsetXEnum<VectorWrapperInfo<SimpleVector2>>::value, "Should return true");
+	static_assert(implem::have_compat_offsets<SimpleVector3, PaddedVector3>::value, "Should be true");
+	static_assert(implem::have_compat_layout<SimpleVector3, PaddedVector3>::value, "Should be true");
+	static_assert(implem::is_vec<pvec3>::value, "Should be true");
+	static_assert(implem::is_vec<svec3>::value, "Should be true");
 } //namespace vwr
 
 #endif

@@ -43,50 +43,59 @@ namespace vwr {
 		template <typename V>
 		Vec<V>& assign_same_type ( Vec<V>& parLeft, const Vec<V>& parRight );
 
-		template <typename T, typename U, std::size_t TS=VectorWrapperInfo<T>::dimensions, std::size_t US=VectorWrapperInfo<T>::dimensions> struct have_same_offsets {
+		template <typename T, typename U, std::size_t TS=VectorWrapperInfo<T>::dimensions, std::size_t US=VectorWrapperInfo<U>::dimensions> struct have_compat_offsets {
 			enum { value = false };
 		};
-		template <typename T, typename U> struct have_same_offsets<T, U, 1, 1> {
+		template <typename T, typename U> struct have_compat_offsets<T, U, 1, 1> {
 			enum {
-				value = (VectorWrapperInfo<T>::offset_x == VectorWrapperInfo<U>::offset_x)
+				value = true
 			};
 		};
-		template <typename T, typename U> struct have_same_offsets<T, U, 2, 2> {
+		template <typename T, typename U> struct have_compat_offsets<T, U, 2, 2> {
 			enum {
-				value = (VectorWrapperInfo<T>::offset_x == VectorWrapperInfo<U>::offset_x) and
-					(VectorWrapperInfo<T>::offset_y == VectorWrapperInfo<U>::offset_y)
+				value =
+					VectorWrapperInfo<T>::offset_y - VectorWrapperInfo<T>::offset_x ==
+						VectorWrapperInfo<U>::offset_y - VectorWrapperInfo<U>::offset_x
 			};
 		};
-		template <typename T, typename U> struct have_same_offsets<T, U, 3, 3> {
+		template <typename T, typename U> struct have_compat_offsets<T, U, 3, 3> {
 			enum {
-				value = (VectorWrapperInfo<T>::offset_x == VectorWrapperInfo<U>::offset_x) and
-					(VectorWrapperInfo<T>::offset_y == VectorWrapperInfo<U>::offset_y) and
-					(VectorWrapperInfo<T>::offset_z == VectorWrapperInfo<U>::offset_z)
+				value =
+					VectorWrapperInfo<T>::offset_y - VectorWrapperInfo<T>::offset_x ==
+						VectorWrapperInfo<U>::offset_y - VectorWrapperInfo<U>::offset_x and
+					VectorWrapperInfo<T>::offset_z - VectorWrapperInfo<T>::offset_x ==
+						VectorWrapperInfo<U>::offset_z - VectorWrapperInfo<U>::offset_x
 			};
 		};
-		template <typename T, typename U> struct have_same_offsets<T, U, 4, 4> {
+		template <typename T, typename U> struct have_compat_offsets<T, U, 4, 4> {
 			enum {
-				value = (VectorWrapperInfo<T>::offset_x == VectorWrapperInfo<U>::offset_x) and
-					(VectorWrapperInfo<T>::offset_y == VectorWrapperInfo<U>::offset_y) and
-					(VectorWrapperInfo<T>::offset_z == VectorWrapperInfo<U>::offset_z) and
-					(VectorWrapperInfo<T>::offset_w == VectorWrapperInfo<U>::offset_w)
+				value =
+					VectorWrapperInfo<T>::offset_y - VectorWrapperInfo<T>::offset_x ==
+						VectorWrapperInfo<U>::offset_y - VectorWrapperInfo<U>::offset_x and
+					VectorWrapperInfo<T>::offset_z - VectorWrapperInfo<T>::offset_x ==
+						VectorWrapperInfo<U>::offset_z - VectorWrapperInfo<U>::offset_x and
+					VectorWrapperInfo<T>::offset_w - VectorWrapperInfo<T>::offset_x ==
+						VectorWrapperInfo<U>::offset_w - VectorWrapperInfo<U>::offset_x
 			};
 		};
 
 		template <typename T, typename U>
-		struct have_same_layout {
+		struct have_compat_layout {
 			enum {
 				value =
 					HasOffsetXEnum<VectorWrapperInfo<T>>::value and HasOffsetXEnum<VectorWrapperInfo<U>>::value and
-					VectorWrapperInfo<T>::dimensions == VectorWrapperInfo<U>::dimensions and
-					have_same_offsets<T, U>::value
+					static_cast<int>(VectorWrapperInfo<T>::dimensions) ==
+						static_cast<int>(VectorWrapperInfo<U>::dimensions) and
+					have_compat_offsets<T, U>::value
 			};
 		};
 
 		template <typename V> struct is_vec {
+			typedef void vector_type;
 			enum { value = false };
 		};
 		template <typename V> struct is_vec<Vec<V>> {
+			typedef V vector_type;
 			enum { value = true };
 		};
 
@@ -103,7 +112,7 @@ namespace vwr {
 
 			VecBase ( void ) = default;
 			template <typename T>
-			explicit VecBase ( const typename std::enable_if<std::is_same<T, scalar_type>::value and not std::is_same<scalar_type, vector_type>::value, T>::type& parInit );
+			explicit VecBase ( const T& parInit, typename std::enable_if<std::is_same<T, scalar_type>::value and not std::is_same<scalar_type, vector_type>::value, bool>::type=false );
 			explicit VecBase ( const vector_type& parInit );
 			template <typename... Args>
 			VecBase ( scalar_type parX, scalar_type parY, Args... parArgs );
@@ -118,9 +127,9 @@ namespace vwr {
 			const vector_type& data ( void ) const { return m_wrapped; }
 
 			template <typename V2>
-			const typename std::enable_if<is_vec<V2>::value and have_same_layout<V, typename V2::vector_type>::value, V2>::type& cast ( void ) const;
+			const typename std::enable_if<is_vec<V2>::value and have_compat_layout<V, typename std::conditional<is_vec<V2>::value, typename is_vec<V2>::vector_type, V>::type>::value and sizeof(V2) <= sizeof(V), V2>::type& cast ( void ) const;
 			template <typename V2>
-			typename std::enable_if<is_vec<V2>::value and have_same_layout<V, typename V2::vector_type>::value, V2>::type& cast ( void );
+			typename std::enable_if<is_vec<V2>::value and have_compat_layout<V, typename std::conditional<is_vec<V2>::value, typename is_vec<V2>::vector_type, V>::type>::value and sizeof(V2) <= sizeof(V), V2>::type& cast ( void );
 
 			template <typename V2> VecBase& operator+= ( const VecBase<V2>& parOther );
 			template <typename V2> VecBase& operator-= ( const VecBase<V2>& parOther );

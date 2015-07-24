@@ -18,16 +18,16 @@ namespace vwr {
 	namespace implem {
 		template <typename V>
 		template <typename T>
-		VecBase<V>::VecBase (const typename std::enable_if<std::is_same<T, scalar_type>::value and not std::is_same<scalar_type, vector_type>::value, T>::type& parInit) :
-			m_wrapped(parInit)
-		{
-		}
-
-		template <typename V>
-		VecBase<V>::VecBase (const vector_type& parInit) {
+		VecBase<V>::VecBase (const T& parInit, typename std::enable_if<std::is_same<T, scalar_type>::value and not std::is_same<scalar_type, vector_type>::value, bool>::type) {
 			for (int z = 0; z < VectorWrapperInfo<V>::dimensions; ++z) {
 				VecGetter<V>::get_at(m_wrapped, z) = parInit;
 			}
+		}
+
+		template <typename V>
+		VecBase<V>::VecBase (const vector_type& parInit) :
+			m_wrapped(parInit)
+		{
 		}
 
 		template <typename V>
@@ -67,14 +67,18 @@ namespace vwr {
 
 		template <typename V>
 		template <typename V2>
-		const typename std::enable_if<is_vec<V2>::value and have_same_layout<V, typename V2::vector_type>::value, V2>::type& VecBase<V>::cast() const {
-			return *reinterpret_cast<const V2*>(this);
+		const typename std::enable_if<is_vec<V2>::value and have_compat_layout<V, typename std::conditional<is_vec<V2>::value, typename is_vec<V2>::vector_type, V>::type>::value and sizeof(V2) <= sizeof(V), V2>::type& VecBase<V>::cast() const {
+			return *reinterpret_cast<const V2*>(
+				reinterpret_cast<const char*>(this) + VectorWrapperInfo<V>::offset_x
+			);
 		}
 
 		template <typename V>
 		template <typename V2>
-		typename std::enable_if<is_vec<V2>::value and have_same_layout<V, typename V2::vector_type>::value, V2>::type& VecBase<V>::cast() {
-			return *reinterpret_cast<V2*>(this);
+		typename std::enable_if<is_vec<V2>::value and have_compat_layout<V, typename std::conditional<is_vec<V2>::value, typename is_vec<V2>::vector_type, V>::type>::value and sizeof(V2) <= sizeof(V), V2>::type& VecBase<V>::cast() {
+			return *reinterpret_cast<V2*>(
+				reinterpret_cast<char*>(this) + VectorWrapperInfo<V>::offset_x
+			);
 		}
 
 		template <typename V>
