@@ -24,17 +24,23 @@ namespace vwr {
 		}
 
 		template <typename V>
-		VecBase<V>::VecBase (const vector_type& parInit) :
-			m_wrapped(parInit)
-		{
+		VecBase<V>::VecBase (const vector_type& parInit) {
+			for (int z = 0; z < VectorWrapperInfo<V>::dimensions; ++z) {
+				VecGetter<V>::get_at(m_wrapped, z) = parInit;
+			}
 		}
 
 		template <typename V>
 		template <typename... Args>
-		VecBase<V>::VecBase (scalar_type parX, scalar_type parY, Args... parArgs) :
-			m_wrapped(parX, parY, parArgs...)
-		{
+		VecBase<V>::VecBase (scalar_type parX, scalar_type parY, Args... parArgs) {
 			static_assert(2 + sizeof...(Args) == dimensions, "Wrong number of parameters received");
+			VecGetter<V>::get_at(m_wrapped, 0) = parX;
+			VecGetter<V>::get_at(m_wrapped, 1) = parY;
+
+			const scalar_type args[sizeof...(Args)] = {parArgs...};
+			for (int z = 0; z < sizeof...(Args); ++z) {
+				VecGetter<V>::get_at(m_wrapped, z + 2) = args[z];
+			}
 		}
 
 		template <typename V>
@@ -109,9 +115,9 @@ namespace vwr {
 		}
 
 		template <typename T>
-		typename VectorWrapperInfo<T>::scalar_type& VecGetter<T, true>::get_at (typename VectorWrapperInfo<T>::vector_type& parVec, std::size_t parIndex) {
+		typename VectorWrapperInfo<T>::scalar_type& VecGetter<T, true>::get_at (T& parVec, std::size_t parIndex) {
 			assert(parIndex < VectorWrapperInfo<T>::dimensions);
-			typedef typename VectorWrapperInfo<T>::vector_type vector_type;
+			typedef T vector_type;
 			typedef typename VectorWrapperInfo<T>::scalar_type scalar_type;
 			typedef scalar_type (vector_type::*coordinate_property);
 			static_assert(std::is_standard_layout<vector_type>::value, "Can't use this function with this vector_type");
@@ -120,7 +126,7 @@ namespace vwr {
 		}
 
 		template <typename T>
-		typename VectorWrapperInfo<T>::scalar_type& VecGetter<T, false>::get_at (typename VectorWrapperInfo<T>::vector_type& parVec, std::size_t parIndex) {
+		typename VectorWrapperInfo<T>::scalar_type& VecGetter<T, false>::get_at (T& parVec, std::size_t parIndex) {
 			assert(parIndex < VectorWrapperInfo<T>::dimensions);
 			return VectorWrapperInfo<T>::get_at(parIndex, parVec);
 		}

@@ -34,10 +34,10 @@
 	private: \
 		struct TrueType { int a[2]; }; \
 		typedef int FalseType; \
-		template <typename C> static decltype(C::typedef_name(), TrueType()) has_typedef ( int ); \
+		template <typename C> static TrueType has_typedef ( const typename C::typedef_name* ); \
 		template <typename C> static FalseType has_typedef ( ... ); \
 	public: \
-		enum { value = sizeof(has_typedef<T>(0)) == sizeof(TrueType) }; \
+		enum { value = sizeof(has_typedef<T>(nullptr)) == sizeof(TrueType) }; \
 	}
 #define define_has_enum(enum_name,pretty_name) \
 	template <typename T> \
@@ -45,8 +45,7 @@
 	private: \
 		struct TrueType { int a[2]; }; \
 		typedef int FalseType; \
-		template <int> void f ( void ); \
-		template <typename C> static TrueType has_enum ( decltype(&f<C::enum_name>) = nullptr ); \
+		template <typename C> static TrueType has_enum ( decltype(C::enum_name)* ); \
 		template <typename C> static FalseType has_enum ( ... ); \
 	public:\
 		enum { value = sizeof(has_enum<T>(nullptr)) == sizeof(TrueType) }; \

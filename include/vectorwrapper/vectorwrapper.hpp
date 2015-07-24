@@ -77,7 +77,7 @@ namespace vwr {
 		struct have_same_layout {
 			enum {
 				value =
-					HasOffsetXEnum<T>::value and HasOffsetXEnum<U>::value and
+					HasOffsetXEnum<VectorWrapperInfo<T>>::value and HasOffsetXEnum<VectorWrapperInfo<U>>::value and
 					VectorWrapperInfo<T>::dimensions == VectorWrapperInfo<U>::dimensions and
 					have_same_offsets<T, U>::value
 			};
@@ -153,11 +153,11 @@ namespace vwr {
 			const std::array<unsigned int, S> offsets;
 		};
 
-		template <typename T, bool=HasOffsetXEnum<VectorWrapperInfo<T>>::value and std::is_standard_layout<typename VectorWrapperInfo<T>::vector_type>::value>
+		template <typename T, bool=HasOffsetXEnum<VectorWrapperInfo<T>>::value and std::is_standard_layout<T>::value>
 		class VecGetter;
 		template <typename T>
 		struct VecGetter<T, true> {
-			static typename VectorWrapperInfo<T>::scalar_type& get_at ( typename VectorWrapperInfo<T>::vector_type& parVec, std::size_t parIndex );
+			static typename VectorWrapperInfo<T>::scalar_type& get_at ( T& parVec, std::size_t parIndex );
 		};
 		template <typename T>
 		struct VecGetter<T, false> {
@@ -169,7 +169,7 @@ namespace vwr {
 			static_assert(std::is_lvalue_reference<typename std::result_of<get_at_func>::type>::value, "Read-only vectors not implemented");
 
 		public:
-			static typename VectorWrapperInfo<T>::scalar_type& get_at ( typename VectorWrapperInfo<T>::vector_type& parVec, std::size_t parIndex );
+			static typename VectorWrapperInfo<T>::scalar_type& get_at ( T& parVec, std::size_t parIndex );
 		};
 
 		template <typename V, bool Enabled> struct Vec2Promotion;

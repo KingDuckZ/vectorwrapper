@@ -154,7 +154,6 @@ namespace vwr {
 	typedef Vec<MixedDataVector3> mvec3;
 	typedef Vec<PaddedVector3> pvec3;
 
-	static_assert(not implem::HasOffsetXEnum<float>::value, "Should return false");
 	static_assert(sizeof(svec1) == sizeof(float), "Wrong size");
 	static_assert(sizeof(svec2) == sizeof(SimpleVector2), "Wrong size");
 	static_assert(sizeof(svec3) == sizeof(SimpleVector3), "Wrong size");
@@ -163,6 +162,10 @@ namespace vwr {
 	static_assert(sizeof(ivec3) == sizeof(IntVector3), "Wrong size");
 	static_assert(sizeof(mvec3) == sizeof(MixedDataVector3), "Wrong size");
 	static_assert(sizeof(pvec3) == sizeof(PaddedVector3), "Wrong size");
+
+	//Vector Wrapper debug assertions
+	static_assert(not implem::HasOffsetXEnum<VectorWrapperInfo<float>>::value, "Should return false");
+	static_assert(implem::HasOffsetXEnum<VectorWrapperInfo<SimpleVector2>>::value, "Should return true");
 } //namespace vwr
 
 #endif
