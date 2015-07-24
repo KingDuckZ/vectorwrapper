@@ -11,5 +11,6 @@ addons:
         packages:
         - gcc-4.8
         - g++-4.8
+        - cmake
 
-sudo: off
+sudo: false
