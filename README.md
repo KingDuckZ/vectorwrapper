@@ -3,6 +3,11 @@
 ![Image Build status](https://travis-ci.org/KingDuckZ/vectorwrapper.svg?branch=master)
 
 ## Motivation ##
+### Short version ###
+A vector wrapper is mainly useful if used as an adapter between vectors from different libraries. It basically removes the need to explicitly construct a vector of type B when you have a vector of type A.
+It's roughly equivalent to using a reinterpret_cast on your vectors, but the code tries really hard to make sure the cast is valid in all cases, wrapping it nicely behind a clean interface. Implicit constructors also allow to convert easily from one type to the other.
+
+### Long version ###
 We all need vectors in our code, and there are quite a few implementations out there. They all do their job, and in terms of interface they are pretty similar to each other, but not *exactly* the same thing.
 While this is not an issue in its own, it can become a problem when your code depends on external libraries that will provide their own vector implementation. So you might have your own implementation, MyVector, and the library will give you Ogre::Vector3, which is what you must use when you invoke Ogre's functions. If you also depend on openCV you will have yet another vector around. Microsoft Kinect SDK also imposes you its own, barebone vector implementation.
 
