@@ -1,5 +1,4 @@
 # Vector Wrapper #
-## Build status ##
 ![Image Build status](https://travis-ci.org/KingDuckZ/vectorwrapper.svg?branch=master)
 
 ## Motivation ##
