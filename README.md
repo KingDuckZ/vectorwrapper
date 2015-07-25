@@ -14,6 +14,11 @@ While through discipline you can manage such cases more or less well, there is o
 
 This is where my class comes into play.
 
+## Practical example ##
+So what's the real benefit of using `Vec<Ogre::Vector3>` instead of just `Ogre::Vector3`, for example? Can't I just assign/cast manually?
+
+Sure you can, but it's more verbose. And as your codebase grows, you will have more and more boundaries where you have to convert from one vector to the other just to call a function from this or that library. Check test/unit/example.cpp for a head-to-head comparison of the two methods.
+
 ## Implementation ##
 The basic idea is that all vectors will somehow give you access to some x, y, z coordinates. You will do that very frequently in your code, maybe on different platforms and in time critical parts of your code, so virtual calls (or equivalent) are not an option. This library is entirely templated, and will let you wrap any type inside a Vec. In fact, you could even just use this wrapper as your vector of choice, using an `std::array<float, 3>` as the wrapped type and forget how it's working under the hood.
 
@@ -176,3 +181,4 @@ In this example we will adapt `std::array<float, N>` and `Ogre::VectorN`. In you
 ## Limitations ##
 * 4D vectors are not currently supported
 * Read-only vectors are not supported (not sure if such a thing is really needed)
+* I haven't profiled this code yet (please be patient), but while I don't want it to slow your program down, I know it won't be comparable to any super optimized vector library. This is not a vector library to begin with. Supporting SSE would be nice, but there is no guarantee the wrapped type has been created with SSE and optimizations in mind. Writing functions for both cases (SIMD-ready structures and scalar structures) would essentially require implementing every function twice. I think it's just a better idea to take an already made vector library and use vectorwrapper as it was intended - to wrap the vector classes that come from that library.
