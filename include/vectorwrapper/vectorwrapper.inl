@@ -79,7 +79,7 @@ namespace vwr {
 
 			//Assert that V2 won't stomp on part of V's data, unless the user
 			//has explicitly said he doesn't care.
-			static_assert((sizeof(typename VectorWrapperInfo<typename is_vec<V2>::vector_type>::scalar_type) * dimensions == sizeof(V2)) or
+			static_assert((sizeof(typename VectorWrapperInfo<typename is_vec<V2>::vector_type>::scalar_type) * VectorWrapperInfo<typename is_vec<V2>::vector_type>::dimensions == sizeof(V2)) or
 				IsCastIgnoreTrailingPropertiesSet<typename is_vec<V2>::vector_type>::value,
 				"V2 must not have any properties past the last coordinate");
 			static_assert(alignof(typename VectorWrapperInfo<V>::scalar_type) == alignof(V2), "Casting to V2 would give you a misaligned variable");

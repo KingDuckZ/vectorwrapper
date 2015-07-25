@@ -71,22 +71,29 @@ namespace vwr {
 			enum { value = get_offset_enum_from_index<T, 0>::value };
 		};
 
-		template <typename T, typename U, std::size_t TS=VectorWrapperInfo<T>::dimensions, std::size_t US=VectorWrapperInfo<U>::dimensions> struct have_compat_offsets {
-			enum { value = false };
-		};
-		template <typename T, typename U> struct have_compat_offsets<T, U, 1, 1> {
+		template <
+			typename T,
+			typename U,
+			std::size_t S=(
+				static_cast<int>(VectorWrapperInfo<T>::dimensions) < static_cast<int>(VectorWrapperInfo<U>::dimensions) ?
+					static_cast<int>(VectorWrapperInfo<T>::dimensions)
+				:
+					static_cast<int>(VectorWrapperInfo<U>::dimensions)
+				)
+			> struct have_compat_offsets;
+		template <typename T, typename U> struct have_compat_offsets<T, U, 1> {
 			enum {
 				value = true
 			};
 		};
-		template <typename T, typename U> struct have_compat_offsets<T, U, 2, 2> {
+		template <typename T, typename U> struct have_compat_offsets<T, U, 2> {
 			enum {
 				value =
 					VectorWrapperInfo<T>::offset_x - min_offset<T>::value == VectorWrapperInfo<U>::offset_x - min_offset<U>::value and
 					VectorWrapperInfo<T>::offset_y - min_offset<T>::value == VectorWrapperInfo<U>::offset_y - min_offset<U>::value
 			};
 		};
-		template <typename T, typename U> struct have_compat_offsets<T, U, 3, 3> {
+		template <typename T, typename U> struct have_compat_offsets<T, U, 3> {
 			enum {
 				value =
 					VectorWrapperInfo<T>::offset_x - min_offset<T>::value == VectorWrapperInfo<U>::offset_x - min_offset<U>::value and
@@ -94,7 +101,7 @@ namespace vwr {
 					VectorWrapperInfo<T>::offset_z - min_offset<T>::value == VectorWrapperInfo<U>::offset_z - min_offset<U>::value
 			};
 		};
-		template <typename T, typename U> struct have_compat_offsets<T, U, 4, 4> {
+		template <typename T, typename U> struct have_compat_offsets<T, U, 4> {
 			enum {
 				value =
 					VectorWrapperInfo<T>::offset_x - min_offset<T>::value == VectorWrapperInfo<U>::offset_x - min_offset<U>::value and
@@ -108,9 +115,8 @@ namespace vwr {
 		struct have_compat_layout {
 			enum {
 				value =
-					HasOffsetXEnum<VectorWrapperInfo<T>>::value and HasOffsetXEnum<VectorWrapperInfo<U>>::value and
-					static_cast<int>(VectorWrapperInfo<T>::dimensions) ==
-						static_cast<int>(VectorWrapperInfo<U>::dimensions) and
+					HasOffsetXEnum<VectorWrapperInfo<T>>::value and
+					HasOffsetXEnum<VectorWrapperInfo<U>>::value and
 					have_compat_offsets<T, U>::value
 			};
 		};

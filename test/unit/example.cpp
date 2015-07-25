@@ -2,6 +2,11 @@
 #include <gtest/gtest.h>
 
 namespace {
+	void test_svec2 (const vwr::svec2& parVec, float parX, float parY) {
+		EXPECT_EQ(parVec.x(), parX);
+		EXPECT_EQ(parVec.y(), parY);
+	}
+
 	void simplevec_double (vwr::SimpleVector3& parVec, float parX, float parY, float parZ) {
 		EXPECT_EQ(parVec.x, parX);
 		EXPECT_EQ(parVec.y, parY);
@@ -73,5 +78,11 @@ TEST(vwr, example) {
 		//If what you wanted is indeed a copy of type SimpleVector3, here we go:
 		svec3 vec_b(vec);
 		EXPECT_EQ(vec_b, vec);
+	}
+
+	{
+		//You can also cast a svec3 to svec2, if you need to.
+		const svec3 vec(9.5f, 1.2f, 0.9f);
+		test_svec2(vec.cast<svec2>(), vec.x(), vec.y());
 	}
 }
