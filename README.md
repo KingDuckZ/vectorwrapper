@@ -33,7 +33,14 @@ Through the `data()` method you can always obtain a ref to the wrapped type.
 Depending on the wrapped type, Vec can provide methods to get a Vec of lower or higher dimensions. For example, `Vec<Ogre::Vector3>` can optionally expose a `xy()` method that is equivalent to `Vec<Ogre::Vector2>(vec3.x(), vec3.y())`.
 
 ### Casting ###
-You can cast `Vec<A>` to `Vec<B>` if they have the same layout and if `B` is only as big as the coordinates part in `A`.
+A must have some fundamental properties before it can be casted to B:
+* casting won't result in a misaligned object
+* the casted object won't go past the memory reserved to the original object (in other words sizeof(B) <= sizeof(A) - offset of the first coordinate in A)
+* B must be a standard layout struct
+* B has no data before the first coordinate
+* Coordinates in B appear in the same order and at the same offsets as they appear in A
+* B is exactly as large as dimensions * sizeof(scalar_type), but you can disable this constraint by setting cast_ignore_trailing_properties=1 in B's VectorWrapperInfo
+
 For example you could conceptually wrap a type A:
 
     struct A {
