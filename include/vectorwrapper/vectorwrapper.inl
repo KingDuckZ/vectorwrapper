@@ -98,7 +98,7 @@ namespace vwr {
 		template <typename V>
 		template <typename V2>
 		VecBase<V>& VecBase<V>::operator+= (const VecBase<V2>& parOther) {
-			static_assert(VectorWrapperInfo<V>::dimensions == VectorWrapperInfo<V2>::dimensions, "Dimensions mismatch");
+			static_assert(static_cast<int>(VectorWrapperInfo<V>::dimensions) == static_cast<int>(VectorWrapperInfo<V2>::dimensions), "Dimensions mismatch");
 			for (int z = 0; z < VectorWrapperInfo<V>::dimensions; ++z) {
 				(*this)[z] += parOther[z];
 			}
@@ -107,7 +107,7 @@ namespace vwr {
 		template <typename V>
 		template <typename V2>
 		VecBase<V>& VecBase<V>::operator-= (const VecBase<V2>& parOther) {
-			static_assert(VectorWrapperInfo<V>::dimensions == VectorWrapperInfo<V2>::dimensions, "Dimensions mismatch");
+			static_assert(static_cast<int>(VectorWrapperInfo<V>::dimensions) == static_cast<int>(VectorWrapperInfo<V2>::dimensions), "Dimensions mismatch");
 			for (int z = 0; z < VectorWrapperInfo<V>::dimensions; ++z) {
 				(*this)[z] -= parOther[z];
 			}
@@ -116,7 +116,7 @@ namespace vwr {
 		template <typename V>
 		template <typename V2>
 		VecBase<V>& VecBase<V>::operator*= (const VecBase<V2>& parOther) {
-			static_assert(VectorWrapperInfo<V>::dimensions == VectorWrapperInfo<V2>::dimensions, "Dimensions mismatch");
+			static_assert(static_cast<int>(VectorWrapperInfo<V>::dimensions) == static_cast<int>(VectorWrapperInfo<V2>::dimensions), "Dimensions mismatch");
 			for (int z = 0; z < VectorWrapperInfo<V>::dimensions; ++z) {
 				(*this)[z] *= parOther[z];
 			}
@@ -125,7 +125,7 @@ namespace vwr {
 		template <typename V>
 		template <typename V2>
 		VecBase<V>& VecBase<V>::operator/= (const VecBase<V2>& parOther) {
-			static_assert(VectorWrapperInfo<V>::dimensions == VectorWrapperInfo<V2>::dimensions, "Dimensions mismatch");
+			static_assert(static_cast<int>(VectorWrapperInfo<V>::dimensions) == static_cast<int>(VectorWrapperInfo<V2>::dimensions), "Dimensions mismatch");
 			for (int z = 0; z < VectorWrapperInfo<V>::dimensions; ++z) {
 				(*this)[z] /= parOther[z];
 			}
@@ -300,7 +300,7 @@ namespace vwr {
 
 	template <typename V1, typename V2>
 	inline bool operator== (const Vec<V1>& parLeft, const Vec<V2>& parRight) {
-		static_assert(VectorWrapperInfo<V1>::dimensions == VectorWrapperInfo<V2>::dimensions, "Dimensions mismatch");
+		static_assert(static_cast<int>(VectorWrapperInfo<V1>::dimensions) == static_cast<int>(VectorWrapperInfo<V2>::dimensions), "Dimensions mismatch");
 		bool retval = true;
 		for (int z = 0; z < VectorWrapperInfo<V1>::dimensions; ++z) {
 			retval &= (parLeft[z] == parRight[z]);
@@ -309,7 +309,7 @@ namespace vwr {
 	}
 	template <typename V1, typename V2>
 	inline bool operator< (const Vec<V1>& parLeft, const Vec<V2>& parRight) {
-		static_assert(VectorWrapperInfo<V1>::dimensions == VectorWrapperInfo<V2>::dimensions, "Dimensions mismatch");
+		static_assert(static_cast<int>(VectorWrapperInfo<V1>::dimensions) == static_cast<int>(VectorWrapperInfo<V2>::dimensions), "Dimensions mismatch");
 		bool retval = true;
 		for (int z = 0; z < VectorWrapperInfo<V1>::dimensions; ++z) {
 			retval &= (parLeft[z] < parRight[z]);
@@ -353,7 +353,7 @@ namespace vwr {
 
 	template <typename V1, typename V2>
 	inline Vec<typename std::common_type<V1, V2>::type> operator+ (const Vec<V1>& parLeft, const Vec<V2>& parRight) {
-		static_assert(VectorWrapperInfo<V1>::dimensions == VectorWrapperInfo<V2>::dimensions, "Dimensions mismatch");
+		static_assert(static_cast<int>(VectorWrapperInfo<V1>::dimensions) == static_cast<int>(VectorWrapperInfo<V2>::dimensions), "Dimensions mismatch");
 		Vec<typename std::common_type<V1, V2>::type> retval;
 		for (int z = 0; z < VectorWrapperInfo<V1>::dimensions; ++z) {
 			retval[z] = parLeft[z] + parRight[z];
@@ -362,7 +362,7 @@ namespace vwr {
 	}
 	template <typename V1, typename V2>
 	inline Vec<typename std::common_type<V1, V2>::type> operator- (const Vec<V1>& parLeft, const Vec<V2>& parRight) {
-		static_assert(VectorWrapperInfo<V1>::dimensions == VectorWrapperInfo<V2>::dimensions, "Dimensions mismatch");
+		static_assert(static_cast<int>(VectorWrapperInfo<V1>::dimensions) == static_cast<int>(VectorWrapperInfo<V2>::dimensions), "Dimensions mismatch");
 		Vec<typename std::common_type<V1, V2>::type> retval;
 		for (int z = 0; z < VectorWrapperInfo<V1>::dimensions; ++z) {
 			retval[z] = parLeft[z] - parRight[z];
@@ -371,7 +371,7 @@ namespace vwr {
 	}
 	template <typename V1, typename V2>
 	inline Vec<typename std::common_type<V1, V2>::type> operator* (const Vec<V1>& parLeft, const Vec<V2>& parRight) {
-		static_assert(VectorWrapperInfo<V1>::dimensions == VectorWrapperInfo<V2>::dimensions, "Dimensions mismatch");
+		static_assert(static_cast<int>(VectorWrapperInfo<V1>::dimensions) == static_cast<int>(VectorWrapperInfo<V2>::dimensions), "Dimensions mismatch");
 		Vec<typename std::common_type<V1, V2>::type> retval;
 		for (int z = 0; z < VectorWrapperInfo<V1>::dimensions; ++z) {
 			retval[z] = parLeft[z] * parRight[z];
@@ -380,7 +380,7 @@ namespace vwr {
 	}
 	template <typename V1, typename V2>
 	inline Vec<typename std::common_type<V1, V2>::type> operator/ (const Vec<V1>& parLeft, const Vec<V2>& parRight) {
-		static_assert(VectorWrapperInfo<V1>::dimensions == VectorWrapperInfo<V2>::dimensions, "Dimensions mismatch");
+		static_assert(static_cast<int>(VectorWrapperInfo<V1>::dimensions) == static_cast<int>(VectorWrapperInfo<V2>::dimensions), "Dimensions mismatch");
 		Vec<typename std::common_type<V1, V2>::type> retval;
 		for (int z = 0; z < VectorWrapperInfo<V1>::dimensions; ++z) {
 			retval[z] = parLeft[z] / parRight[z];

@@ -1,17 +1,19 @@
 #include "sample_vectors.hpp"
 #include <gtest/gtest.h>
 
-void test_svec3 (const vwr::svec3& parVec, float parX, float parY, float parZ) {
-	EXPECT_EQ(parVec.x(), parX);
-	EXPECT_EQ(parVec.y(), parY);
-	EXPECT_EQ(parVec.z(), parZ);
-}
+namespace {
+	void test_svec3 (const vwr::svec3& parVec, float parX, float parY, float parZ) {
+		EXPECT_EQ(parVec.x(), parX);
+		EXPECT_EQ(parVec.y(), parY);
+		EXPECT_EQ(parVec.z(), parZ);
+	}
 
-void test_tvec3 (const vwr::tvec3& parVec, float parX, float parY, float parZ) {
-	EXPECT_EQ(parVec.x(), parX);
-	EXPECT_EQ(parVec.y(), parY);
-	EXPECT_EQ(parVec.z(), parZ);
-}
+	void test_tvec3 (const vwr::tvec3& parVec, float parX, float parY, float parZ) {
+		EXPECT_EQ(parVec.x(), parX);
+		EXPECT_EQ(parVec.y(), parY);
+		EXPECT_EQ(parVec.z(), parZ);
+	}
+} //unnamed namespace
 
 TEST(vwr, conversion) {
 	using namespace vwr;
