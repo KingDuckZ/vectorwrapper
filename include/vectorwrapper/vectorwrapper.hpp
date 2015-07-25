@@ -292,9 +292,9 @@ namespace vwr {
 	template <typename V>
 	class Vec<V, 1> : public implem::VecBase<V>, public implem::VecAccessors<V, 1> {
 		static_assert(std::is_standard_layout<implem::VecBase<V>>::value, "Base class must be a standard layout type");
+	public:
 		typedef typename implem::VecBase<V>::vector_type vector_type;
 		typedef typename implem::VecBase<V>::scalar_type scalar_type;
-	public:
 		enum {
 			dimensions = 1
 		};
@@ -317,9 +317,9 @@ namespace vwr {
 	class Vec<V, 2> : public implem::VecBase<V>, public implem::VecAccessors<V, 2> {
 		static_assert(std::is_standard_layout<implem::VecBase<V>>::value, "Base class must be a standard layout type");
 		static_assert(std::is_standard_layout<implem::VecAccessors<V, 2>>::value, "Base class must be a standard layout type");
+	public:
 		typedef typename implem::VecBase<V>::scalar_type scalar_type;
 		typedef typename implem::VecBase<V>::vector_type vector_type;
-	public:
 		enum {
 			dimensions = 2
 		};
@@ -344,9 +344,9 @@ namespace vwr {
 	class Vec<V, 3> : public implem::VecBase<V>, public implem::VecAccessors<V, 3> {
 		static_assert(std::is_standard_layout<implem::VecBase<V>>::value, "Base class must be a standard layout type");
 		static_assert(std::is_standard_layout<implem::VecAccessors<V, 3>>::value, "Base class must be a standard layout type");
+	public:
 		typedef typename implem::VecBase<V>::scalar_type scalar_type;
 		typedef typename implem::VecBase<V>::vector_type vector_type;
-	public:
 		enum {
 			dimensions = 3
 		};
