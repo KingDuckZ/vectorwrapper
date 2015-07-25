@@ -16,6 +16,10 @@
 
 namespace vwr {
 	namespace implem {
+		template <typename T, bool=HasCastIgnoreTrailingPropertiesEnum<VectorWrapperInfo<T>>::value> struct IsCastIgnoreTrailingPropertiesSet;
+		template <typename T> struct IsCastIgnoreTrailingPropertiesSet<T, true> { static const bool value = static_cast<bool>(VectorWrapperInfo<T>::cast_ignore_trailing_properties); };
+		template <typename T> struct IsCastIgnoreTrailingPropertiesSet<T, false> { static const bool value = false; };
+
 		template <typename V>
 		template <typename T>
 		VecBase<V>::VecBase (const T& parInit, typename std::enable_if<std::is_same<T, scalar_type>::value and not std::is_same<scalar_type, vector_type>::value, bool>::type) {
@@ -67,7 +71,19 @@ namespace vwr {
 
 		template <typename V>
 		template <typename V2>
-		const typename std::enable_if<is_vec<V2>::value and have_compat_layout<V, typename std::conditional<is_vec<V2>::value, typename is_vec<V2>::vector_type, V>::type>::value and sizeof(V2) <= sizeof(V), V2>::type& VecBase<V>::cast() const {
+		const typename std::enable_if<is_vec<V2>::value, V2>::type& VecBase<V>::cast() const {
+			static_assert(sizeof(V2) <= sizeof(VecBase<V>) - min_offset<V>::value, "V2 must fit in V starting from the first coordinate");
+			static_assert(std::is_standard_layout<V2>::value, "V2 must be a standard layout type");
+			static_assert(min_offset<typename is_vec<V2>::vector_type>::value == 0, "V2 must not have any properties before the first coordinate");
+			static_assert(have_compat_layout<V, typename is_vec<V2>::vector_type>::value, "V is not suitable for casting to V2");
+
+			//Assert that V2 won't stomp on part of V's data, unless the user
+			//has explicitly said he doesn't care.
+			static_assert((sizeof(typename VectorWrapperInfo<typename is_vec<V2>::vector_type>::scalar_type) * dimensions == sizeof(V2)) or
+				IsCastIgnoreTrailingPropertiesSet<typename is_vec<V2>::vector_type>::value,
+				"V2 must not have any properties past the last coordinate");
+			static_assert(alignof(typename VectorWrapperInfo<V>::scalar_type) == alignof(V2), "Casting to V2 would give you a misaligned variable");
+
 			return *reinterpret_cast<const V2*>(
 				reinterpret_cast<const char*>(this) + VectorWrapperInfo<V>::offset_x
 			);
@@ -75,10 +91,8 @@ namespace vwr {
 
 		template <typename V>
 		template <typename V2>
-		typename std::enable_if<is_vec<V2>::value and have_compat_layout<V, typename std::conditional<is_vec<V2>::value, typename is_vec<V2>::vector_type, V>::type>::value and sizeof(V2) <= sizeof(V), V2>::type& VecBase<V>::cast() {
-			return *reinterpret_cast<V2*>(
-				reinterpret_cast<char*>(this) + VectorWrapperInfo<V>::offset_x
-			);
+		typename std::enable_if<is_vec<V2>::value, V2>::type& VecBase<V>::cast() {
+			return const_cast<V2&>(const_cast<const VecBase<V>*>(this)->cast<V2>());
 		}
 
 		template <typename V>

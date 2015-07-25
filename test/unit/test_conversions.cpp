@@ -7,6 +7,12 @@ void test_svec3 (const vwr::svec3& parVec, float parX, float parY, float parZ) {
 	EXPECT_EQ(parVec.z(), parZ);
 }
 
+void test_tvec3 (const vwr::tvec3& parVec, float parX, float parY, float parZ) {
+	EXPECT_EQ(parVec.x(), parX);
+	EXPECT_EQ(parVec.y(), parY);
+	EXPECT_EQ(parVec.z(), parZ);
+}
+
 TEST(vwr, conversion) {
 	using namespace vwr;
 
@@ -42,5 +48,6 @@ TEST(vwr, conversion) {
 	{
 		pvec3 p3(1.0f, 2.0f, 3.0f);
 		test_svec3(p3.cast<svec3>(), p3.x(), p3.y(), p3.z());
+		test_tvec3(p3.cast<tvec3>(), p3.x(), p3.y(), p3.z());
 	}
 }

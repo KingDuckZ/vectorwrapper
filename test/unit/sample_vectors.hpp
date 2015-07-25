@@ -45,7 +45,14 @@ namespace vwr {
 		float x;
 		float y;
 		float z;
-		float c;
+		int c, d;
+	};
+
+	struct TrailingDataVector3 {
+		float X;
+		float Y;
+		float Z;
+		int a, b;
 	};
 
 	template <>
@@ -145,6 +152,21 @@ namespace vwr {
 		};
 	};
 
+	template <>
+	struct VectorWrapperInfo<TrailingDataVector3> {
+		enum {
+			dimensions = 3,
+			cast_ignore_trailing_properties = 1
+		};
+		typedef float scalar_type;
+
+		enum {
+			offset_x = offsetof(TrailingDataVector3, X),
+			offset_y = offsetof(TrailingDataVector3, Y),
+			offset_z = offsetof(TrailingDataVector3, Z)
+		};
+	};
+
 	typedef Vec<float> svec1;
 	typedef Vec<SimpleVector2> svec2;
 	typedef Vec<SimpleVector3> svec3;
@@ -153,6 +175,7 @@ namespace vwr {
 	typedef Vec<IntVector3> ivec3;
 	typedef Vec<MixedDataVector3> mvec3;
 	typedef Vec<PaddedVector3> pvec3;
+	typedef Vec<TrailingDataVector3> tvec3;
 
 	static_assert(sizeof(svec1) == sizeof(float), "Wrong size");
 	static_assert(sizeof(svec2) == sizeof(SimpleVector2), "Wrong size");

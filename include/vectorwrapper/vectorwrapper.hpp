@@ -37,11 +37,39 @@ namespace vwr {
 		define_has_typedef(higher_vector_type, HigherVec);
 		define_has_enum(offset_x, OffsetX);
 		define_has_method(get_at, GetAt);
+		define_has_enum(cast_ignore_trailing_properties, CastIgnoreTrailingProperties);
 
 		template <typename V1, typename V2, std::size_t D>
 		Vec<V1>& assign ( Vec<V1, D>& parLeft, const Vec<V2, D>& parRight );
 		template <typename V>
 		Vec<V>& assign_same_type ( Vec<V>& parLeft, const Vec<V>& parRight );
+
+		template <typename T, std::size_t I> struct get_offset_enum_from_index;
+		template <typename T> struct get_offset_enum_from_index<T, 0> {
+			enum { value = VectorWrapperInfo<T>::offset_x };
+		};
+		template <typename T> struct get_offset_enum_from_index<T, 1> {
+			enum { value = VectorWrapperInfo<T>::offset_y };
+		};
+		template <typename T> struct get_offset_enum_from_index<T, 2> {
+			enum { value = VectorWrapperInfo<T>::offset_z };
+		};
+		template <typename T> struct get_offset_enum_from_index<T, 3> {
+			enum { value = VectorWrapperInfo<T>::offset_w };
+		};
+
+		template <typename T, std::size_t S=VectorWrapperInfo<T>::dimensions> struct min_offset {
+			enum {
+				value = (
+					static_cast<int>(get_offset_enum_from_index<T, S-1>::value) < static_cast<int>(min_offset<T, S-1>::value) ?
+						static_cast<int>(get_offset_enum_from_index<T, S-1>::value) :
+						static_cast<int>(min_offset<T, S-1>::value)
+					)
+			};
+		};
+		template <typename T> struct min_offset<T, 1> {
+			enum { value = get_offset_enum_from_index<T, 0>::value };
+		};
 
 		template <typename T, typename U, std::size_t TS=VectorWrapperInfo<T>::dimensions, std::size_t US=VectorWrapperInfo<U>::dimensions> struct have_compat_offsets {
 			enum { value = false };
@@ -54,28 +82,25 @@ namespace vwr {
 		template <typename T, typename U> struct have_compat_offsets<T, U, 2, 2> {
 			enum {
 				value =
-					VectorWrapperInfo<T>::offset_y - VectorWrapperInfo<T>::offset_x ==
-						VectorWrapperInfo<U>::offset_y - VectorWrapperInfo<U>::offset_x
+					VectorWrapperInfo<T>::offset_x - min_offset<T>::value == VectorWrapperInfo<U>::offset_x - min_offset<U>::value and
+					VectorWrapperInfo<T>::offset_y - min_offset<T>::value == VectorWrapperInfo<U>::offset_y - min_offset<U>::value
 			};
 		};
 		template <typename T, typename U> struct have_compat_offsets<T, U, 3, 3> {
 			enum {
 				value =
-					VectorWrapperInfo<T>::offset_y - VectorWrapperInfo<T>::offset_x ==
-						VectorWrapperInfo<U>::offset_y - VectorWrapperInfo<U>::offset_x and
-					VectorWrapperInfo<T>::offset_z - VectorWrapperInfo<T>::offset_x ==
-						VectorWrapperInfo<U>::offset_z - VectorWrapperInfo<U>::offset_x
+					VectorWrapperInfo<T>::offset_x - min_offset<T>::value == VectorWrapperInfo<U>::offset_x - min_offset<U>::value and
+					VectorWrapperInfo<T>::offset_y - min_offset<T>::value == VectorWrapperInfo<U>::offset_y - min_offset<U>::value and
+					VectorWrapperInfo<T>::offset_z - min_offset<T>::value == VectorWrapperInfo<U>::offset_z - min_offset<U>::value
 			};
 		};
 		template <typename T, typename U> struct have_compat_offsets<T, U, 4, 4> {
 			enum {
 				value =
-					VectorWrapperInfo<T>::offset_y - VectorWrapperInfo<T>::offset_x ==
-						VectorWrapperInfo<U>::offset_y - VectorWrapperInfo<U>::offset_x and
-					VectorWrapperInfo<T>::offset_z - VectorWrapperInfo<T>::offset_x ==
-						VectorWrapperInfo<U>::offset_z - VectorWrapperInfo<U>::offset_x and
-					VectorWrapperInfo<T>::offset_w - VectorWrapperInfo<T>::offset_x ==
-						VectorWrapperInfo<U>::offset_w - VectorWrapperInfo<U>::offset_x
+					VectorWrapperInfo<T>::offset_x - min_offset<T>::value == VectorWrapperInfo<U>::offset_x - min_offset<U>::value and
+					VectorWrapperInfo<T>::offset_y - min_offset<T>::value == VectorWrapperInfo<U>::offset_y - min_offset<U>::value and
+					VectorWrapperInfo<T>::offset_z - min_offset<T>::value == VectorWrapperInfo<U>::offset_z - min_offset<U>::value and
+					VectorWrapperInfo<T>::offset_w - min_offset<T>::value == VectorWrapperInfo<U>::offset_w - min_offset<U>::value
 			};
 		};
 
@@ -91,7 +116,6 @@ namespace vwr {
 		};
 
 		template <typename V> struct is_vec {
-			typedef void vector_type;
 			enum { value = false };
 		};
 		template <typename V> struct is_vec<Vec<V>> {
@@ -127,9 +151,9 @@ namespace vwr {
 			const vector_type& data ( void ) const { return m_wrapped; }
 
 			template <typename V2>
-			const typename std::enable_if<is_vec<V2>::value and have_compat_layout<V, typename std::conditional<is_vec<V2>::value, typename is_vec<V2>::vector_type, V>::type>::value and sizeof(V2) <= sizeof(V), V2>::type& cast ( void ) const;
+			const typename std::enable_if<is_vec<V2>::value, V2>::type& cast ( void ) const;
 			template <typename V2>
-			typename std::enable_if<is_vec<V2>::value and have_compat_layout<V, typename std::conditional<is_vec<V2>::value, typename is_vec<V2>::vector_type, V>::type>::value and sizeof(V2) <= sizeof(V), V2>::type& cast ( void );
+			typename std::enable_if<is_vec<V2>::value, V2>::type& cast ( void );
 
 			template <typename V2> VecBase& operator+= ( const VecBase<V2>& parOther );
 			template <typename V2> VecBase& operator-= ( const VecBase<V2>& parOther );
@@ -138,20 +162,6 @@ namespace vwr {
 
 		private:
 			vector_type m_wrapped;
-		};
-
-		template <typename T, std::size_t I> struct get_offset_enum_from_index;
-		template <typename T> struct get_offset_enum_from_index<T, 0> {
-			enum { value = VectorWrapperInfo<T>::offset_x };
-		};
-		template <typename T> struct get_offset_enum_from_index<T, 1> {
-			enum { value = VectorWrapperInfo<T>::offset_y };
-		};
-		template <typename T> struct get_offset_enum_from_index<T, 2> {
-			enum { value = VectorWrapperInfo<T>::offset_z };
-		};
-		template <typename T> struct get_offset_enum_from_index<T, 3> {
-			enum { value = VectorWrapperInfo<T>::offset_w };
 		};
 
 		template <typename T, std::size_t S=VectorWrapperInfo<T>::dimensions>
