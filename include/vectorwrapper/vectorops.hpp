@@ -12,7 +12,7 @@ namespace vwr {
 	template <typename V1, typename V2, std::size_t S>
 	inline typename std::common_type<typename Vec<V1>::scalar_type, typename Vec<V2>::scalar_type>::type dot (const Vec<V1, S>& parLeft, const Vec<V2, S>& parRight) {
 		auto retval = parLeft.x() * parRight.x();
-		for (int z = 1; z < S; ++z) {
+		for (std::size_t z = 1; z < S; ++z) {
 			retval += parLeft[z] * parRight[z];
 		}
 		return retval;

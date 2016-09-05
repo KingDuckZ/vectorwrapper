@@ -42,7 +42,7 @@ namespace vwr {
 			VecGetter<V>::get_at(m_wrapped, 1) = parY;
 
 			const scalar_type args[sizeof...(Args)] = {parArgs...};
-			for (int z = 0; z < sizeof...(Args); ++z) {
+			for (std::size_t z = 0; z < sizeof...(Args); ++z) {
 				VecGetter<V>::get_at(m_wrapped, z + 2) = args[z];
 			}
 		}
@@ -137,7 +137,6 @@ namespace vwr {
 			assert(parIndex < VectorWrapperInfo<T>::dimensions);
 			typedef T vector_type;
 			typedef typename VectorWrapperInfo<T>::scalar_type scalar_type;
-			typedef scalar_type (vector_type::*coordinate_property);
 			static_assert(std::is_standard_layout<vector_type>::value, "Can't use this function with this vector_type");
 			const offsets_array_wrapper<T> oaw((bt::index_range<0, VectorWrapperInfo<T>::dimensions>()));
 			return *reinterpret_cast<scalar_type*>(reinterpret_cast<char*>(&parVec) + oaw.offsets[parIndex]);
