@@ -26,27 +26,55 @@ namespace vwr {
 		template <typename V, std::size_t=::vwr::Vec<V>::dimensions, typename=typename ::vwr::Vec<V>::scalar_type>
 		class Vec;
 
+		template <typename V, std::size_t=::vwr::Vec<V>::dimensions, typename=typename ::vwr::Vec<V>::scalar_type>
+		class VecPack;
+
 		template <typename V>
-		class Vec<V, 3, float> : public ::vwr::Vec<V, 3> {
-			typedef ::vwr::Vec<V, 3> base_class;
+		class Vec<V, 3, float> : public implem::VecBase<V>, public implem::VecAccessors<V, 3> {
+			typedef ::vwr::implem::VecBase<V> base_class;
 		public:
 			static_assert(alignof(V) % 16 == 0, "Wrapped type must be aligned to 16");
 			static_assert(base_class::is_interleaved_mem == 0, "Expected tightly packed vector_type");
 
 			using typename base_class::vector_type;
+			typedef VecPack<V, 3, float> pack_type;
 			typedef float scalar_type;
 
 			Vec ( void ) = default;
 			Vec ( const Vec& ) = default;
+			Vec ( VecPack<V, 3, float> parPack ) __attribute__((always_inline));
 			explicit Vec ( const vector_type& parIn ) : base_class(parIn) { }
 			explicit Vec ( const scalar_type parX ) : base_class(parX) { }
 			explicit Vec ( const base_class& parIn ) : base_class(parIn) { }
+
+			Vec& operator= ( VecPack<V, 3, float> parPack ) __attribute__((always_inline));
 
 			template <typename V2> Vec& operator+= ( const Vec<V2, 3, scalar_type>& parOther );
 			template <typename V2> Vec& operator-= ( const Vec<V2, 3, scalar_type>& parOther );
 			template <typename V2> Vec& operator*= ( const Vec<V2, 3, scalar_type>& parOther );
 			template <typename V2> Vec& operator/= ( const Vec<V2, 3, scalar_type>& parOther );
 		};
+
+		template <typename V>
+		class VecPack<V, 3, float> {
+		public:
+			VecPack ( const Vec<V, 3, float>& parVec ) __attribute__((always_inline));
+			VecPack ( __m128 parPack ) __attribute__((always_inline));
+			VecPack ( float parValue ) __attribute__((always_inline));
+
+			__m128 pack;
+		};
+
+		template <template <typename, std::size_t, typename> class V1, template <typename, std::size_t, typename> class V2, typename V>
+		inline VecPack<V, 3, float> operator+ ( V1<V, 3, float> parLeft, V2<V, 3, float> parRight ) __attribute__((always_inline));
+		template <template <typename, std::size_t, typename> class V1, template <typename, std::size_t, typename> class V2, typename V>
+		inline VecPack<V, 3, float> operator+ ( V1<V, 3, float> parLeft, V2<V, 3, float> parRight ) __attribute__((always_inline));
+		template <template <typename, std::size_t, typename> class V1, template <typename, std::size_t, typename> class V2, typename V>
+		inline VecPack<V, 3, float> operator- ( V1<V, 3, float> parLeft, V2<V, 3, float> parRight ) __attribute__((always_inline));
+		template <template <typename, std::size_t, typename> class V1, template <typename, std::size_t, typename> class V2, typename V>
+		inline VecPack<V, 3, float> operator* ( V1<V, 3, float> parLeft, V2<V, 3, float> parRight ) __attribute__((always_inline));
+		template <template <typename, std::size_t, typename> class V1, template <typename, std::size_t, typename> class V2, typename V>
+		inline VecPack<V, 3, float> operator/ ( V1<V, 3, float> parLeft, V2<V, 3, float> parRight ) __attribute__((always_inline));
 	} //namespace simd
 } //namespace vwr
 

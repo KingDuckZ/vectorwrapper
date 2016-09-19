@@ -17,6 +17,16 @@
 namespace vwr {
 	namespace simd {
 		template <typename V>
+		inline Vec<V, 3, float>::Vec (VecPack<V, 3, float> parPack) {
+			_mm_store_ps(&this->x(), parPack.pack);
+		}
+
+		template <typename V>
+		Vec<V, 3, float>& Vec<V, 3, float>::operator= (VecPack<V, 3, float> parPack) {
+			_mm_store_ps(&this->x(), parPack.pack);
+		}
+
+		template <typename V>
 		template <typename V2>
 		auto Vec<V, 3, float>::operator+= (const Vec<V2, 3, scalar_type>& parOther) -> Vec& {
 			__m128 pack_this;
@@ -42,6 +52,44 @@ namespace vwr {
 			_mm_store_ps(&this->x(), pack_this);
 
 			return *this;
+		}
+
+		template <typename V>
+		inline VecPack<V, 3, float>::VecPack (const Vec<V, 3, float>& parVec) :
+			pack(_mm_load_ps(&parVec.x()))
+		{
+		}
+
+		template <typename V>
+		inline VecPack<V, 3, float>::VecPack (__m128 parPack) :
+			pack(parPack)
+		{
+		}
+
+		template <typename V>
+		inline VecPack<V, 3, float>::VecPack (float parValue) :
+			pack(_mm_load1_ps(&parValue))
+		{
+		}
+
+		template <template <typename, std::size_t, typename> class V1, template <typename, std::size_t, typename> class V2, typename V>
+		inline VecPack<V, 3, float> operator+ (V1<V, 3, float> parLeft, V2<V, 3, float> parRight) {
+			return _mm_add_ps(VecPack<V, 3, float>(parLeft).pack, VecPack<V, 3, float>(parRight).pack);
+		}
+
+		template <template <typename, std::size_t, typename> class V1, template <typename, std::size_t, typename> class V2, typename V>
+		inline VecPack<V, 3, float> operator- (V1<V, 3, float> parLeft, V2<V, 3, float> parRight) {
+			return _mm_sub_ps(VecPack<V, 3, float>(parLeft).pack, VecPack<V, 3, float>(parRight).pack);
+		}
+
+		template <template <typename, std::size_t, typename> class V1, template <typename, std::size_t, typename> class V2, typename V>
+		inline VecPack<V, 3, float> operator* (V1<V, 3, float> parLeft, V2<V, 3, float> parRight) {
+			return _mm_mul_ps(VecPack<V, 3, float>(parLeft).pack, VecPack<V, 3, float>(parRight).pack);
+		}
+
+		template <template <typename, std::size_t, typename> class V1, template <typename, std::size_t, typename> class V2, typename V>
+		inline VecPack<V, 3, float> operator/ (V1<V, 3, float> parLeft, V2<V, 3, float> parRight) {
+			return _mm_div_ps(VecPack<V, 3, float>(parLeft).pack, VecPack<V, 3, float>(parRight).pack);
 		}
 	} //namespace simd
 } //namespace vwr

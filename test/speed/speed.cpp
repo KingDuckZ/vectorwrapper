@@ -2,6 +2,7 @@
 #include "vectorwrapper/vectorwrapper_simd.hpp"
 #include <gtest/gtest.h>
 #include <memory>
+#include <random>
 
 namespace vwr {
 	typedef std::aligned_storage<sizeof(float) * 3, 16>::type float3_storage;
@@ -20,15 +21,38 @@ namespace vwr {
 } //namespace vwr
 
 TEST(vwr_speed, speed) {
+	std::minstd_rand randgen;
+
 	typedef vwr::simd::Vec<vwr::float3_storage> simd_vec3;
 	static_assert(sizeof(simd_vec3) >= sizeof(float) * 3, "SIMD vector too small");
 
-	simd_vec3 v1(1.0f);
-	simd_vec3 v2(0.5f);
+	auto s1 = static_cast<float>(randgen()) / static_cast<float>(randgen.max());
+	auto s2 = static_cast<float>(randgen()) / static_cast<float>(randgen.max());
+	simd_vec3 v1(s1);
+	simd_vec3 v2(s2);
 
+	s1 += s2;
 	v1 += v2;
+	EXPECT_FLOAT_EQ(s1, v1.x());
+	EXPECT_FLOAT_EQ(s1, v1.y());
+	EXPECT_FLOAT_EQ(s1, v1.z());
 
-	EXPECT_FLOAT_EQ(1.5f, v1.x());
-	EXPECT_FLOAT_EQ(1.5f, v1.y());
-	EXPECT_FLOAT_EQ(1.5f, v1.z());
+	auto s3 = s1 + s2;
+	simd_vec3 v3 = v1 + v2;
+	EXPECT_FLOAT_EQ(s3, v3.x());
+	EXPECT_FLOAT_EQ(s3, v3.y());
+	EXPECT_FLOAT_EQ(s3, v3.z());
+
+	auto s4 = (s3 - s2) * s1;
+	simd_vec3 v4 = (v3 - v2) * v1;
+	EXPECT_FLOAT_EQ(s4, v4.x());
+	EXPECT_FLOAT_EQ(s4, v4.y());
+	EXPECT_FLOAT_EQ(s4, v4.z());
+
+	simd_vec3::pack_type zeroeight(0.8f);
+	auto s5 = s4 / s1 + 0.8f;
+	simd_vec3 v5 = v4 / v1 + zeroeight;
+	EXPECT_FLOAT_EQ(s5, v5.x());
+	EXPECT_FLOAT_EQ(s5, v5.y());
+	EXPECT_FLOAT_EQ(s5, v5.z());
 }
