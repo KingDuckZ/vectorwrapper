@@ -10,3 +10,9 @@ add_executable(${PROJECT_NAME}
 target_link_libraries(${PROJECT_NAME}
 	gtest
 )
+
+add_test(
+	NAME UnitTest
+	WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+	COMMAND ${PROJECT_NAME}
+)
