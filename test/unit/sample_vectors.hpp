@@ -4,6 +4,7 @@
 #include "vectorwrapper/vectorwrapper.hpp"
 #include <cstdint>
 #include <cstddef>
+#include <ciso646>
 
 namespace vwr {
 	struct SimpleVector2 {
@@ -185,6 +186,15 @@ namespace vwr {
 	static_assert(sizeof(ivec3) == sizeof(IntVector3), "Wrong size");
 	static_assert(sizeof(mvec3) == sizeof(MixedDataVector3), "Wrong size");
 	static_assert(sizeof(pvec3) == sizeof(PaddedVector3), "Wrong size");
+	static_assert(svec1::is_interleaved_mem == 2, "Maybe interleaved data was expected");
+	static_assert(svec2::is_interleaved_mem == 0, "Non-interleaved data was expected");
+	static_assert(svec3::is_interleaved_mem == 0, "Non-interleaved data was expected");
+	static_assert(ivec1::is_interleaved_mem == 0, "Non-interleaved data was expected");
+	static_assert(ivec2::is_interleaved_mem == 0, "Non-interleaved data was expected");
+	static_assert(ivec3::is_interleaved_mem == 0, "Non-interleaved data was expected");
+	static_assert(mvec3::is_interleaved_mem == 1, "Interleaved data was expected");
+	static_assert(pvec3::is_interleaved_mem == 0, "Interleaved data was expected");
+	static_assert(tvec3::is_interleaved_mem == 0, "Non-interleaved data was expected");
 
 	//Vector Wrapper debug assertions
 	static_assert(not implem::HasOffsetXEnum<VectorWrapperInfo<float>>::value, "Should return false");

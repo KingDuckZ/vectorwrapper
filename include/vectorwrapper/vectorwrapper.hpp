@@ -121,6 +121,45 @@ namespace vwr {
 			};
 		};
 
+		template <std::size_t A, std::size_t... Others>
+		struct Sum {
+			enum {
+				value = A + Sum<Others...>::value
+			};
+		};
+		template <std::size_t A>
+		struct Sum<A> {
+			enum {
+				value = A
+			};
+		};
+
+		template <typename T, typename Seq>
+		struct IsInterleavedMemory;
+		template <typename T, std::size_t... I>
+		struct IsInterleavedMemory<T, bt::index_seq<I...>> {
+			enum {
+				value = Sum<(
+						get_offset_enum_from_index<T, I>::value == I * sizeof(typename VectorWrapperInfo<T>::scalar_type) + get_offset_enum_from_index<T, 0>::value ? 0 : 1
+					)...>::value
+			};
+		};
+
+		template <typename T, bool RawDataAccess=HasOffsetXEnum<VectorWrapperInfo<T>>::value>
+		struct WrappedTypeLayoutInfo;
+		template <typename T>
+		struct WrappedTypeLayoutInfo<T, true> {
+			enum {
+				is_interleaved_mem = (IsInterleavedMemory<T, bt::index_range<0, VectorWrapperInfo<T>::dimensions>>::value ? 1 : 0)
+			};
+		};
+		template <typename T>
+		struct WrappedTypeLayoutInfo<T, false> {
+			enum {
+				is_interleaved_mem = 2
+			};
+		};
+
 		template <typename V> struct is_vec {
 			enum { value = false };
 		};
@@ -137,7 +176,8 @@ namespace vwr {
 			typedef typename VectorWrapperInfo<V>::scalar_type scalar_type;
 
 			enum {
-				dimensions = VectorWrapperInfo<V>::dimensions
+				dimensions = VectorWrapperInfo<V>::dimensions,
+				is_interleaved_mem = WrappedTypeLayoutInfo<V>::is_interleaved_mem
 			};
 
 			VecBase ( void ) = default;
