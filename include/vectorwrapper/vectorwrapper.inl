@@ -41,10 +41,18 @@ namespace vwr {
 			VecGetter<V>::get_at(m_wrapped, 0) = parX;
 			VecGetter<V>::get_at(m_wrapped, 1) = parY;
 
-			const scalar_type args[sizeof...(Args)] = {parArgs...};
-			for (std::size_t z = 0; z < sizeof...(Args); ++z) {
-				VecGetter<V>::get_at(m_wrapped, z + 2) = args[z];
-			}
+			assign_values(bt::index_range<2, dimensions>(), std::forward<Args>(parArgs)...);
+		}
+
+		template <typename V>
+		template <std::size_t... I, typename... Args>
+		void VecBase<V>::assign_values (const bt::index_seq<I...>&, Args... parArgs) {
+			static_assert(sizeof...(I) == sizeof...(Args), "Argument count and indices count mismatch");
+
+			std::initializer_list<scalar_type> t {
+				(VecGetter<V>::get_at(m_wrapped, I) = parArgs)...
+			};
+			static_cast<void>(t);
 		}
 
 		template <typename V>
@@ -143,7 +151,7 @@ namespace vwr {
 		}
 
 		template <typename T>
-		typename VectorWrapperInfo<T>::scalar_type& VecGetter<T, false>::get_at (T& parVec, std::size_t parIndex) {
+		auto VecGetter<T, false>::get_at (T& parVec, std::size_t parIndex) -> get_at_rettype {
 			assert(parIndex < VectorWrapperInfo<T>::dimensions);
 			return VectorWrapperInfo<T>::get_at(parIndex, parVec);
 		}

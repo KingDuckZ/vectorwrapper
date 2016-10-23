@@ -167,6 +167,9 @@ namespace vwr {
 			template <typename V2> VecBase& operator/= ( const VecBase<V2>& parOther );
 
 		private:
+			template <std::size_t... I, typename... Args>
+			void assign_values (const bt::index_seq<I...>&, Args... parArgs);
+
 			vector_type m_wrapped;
 		};
 
@@ -189,12 +192,15 @@ namespace vwr {
 		private:
 			static_assert(HasGetAtMethod<VectorWrapperInfo<T>>::value, "You must provide a get_at() static method for this vector_type");
 			typedef typename VectorWrapperInfo<T>::scalar_type scalar_type;
-			using get_at_func = decltype(&VectorWrapperInfo<T>::get_at)(std::size_t, scalar_type&);
-			static_assert(not std::is_rvalue_reference<typename std::result_of<get_at_func>::type>::value, "rvalue ref return types not implemented");
-			static_assert(std::is_lvalue_reference<typename std::result_of<get_at_func>::type>::value, "Read-only vectors not implemented");
+			typedef T vector_type;
+			using get_at_func = decltype(&VectorWrapperInfo<T>::get_at)(std::size_t, vector_type&);
+			using get_at_rettype = typename std::result_of<get_at_func>::type;
+
+			static_assert(not std::is_rvalue_reference<get_at_rettype>::value, "rvalue ref return types not implemented");
+			static_assert(std::is_lvalue_reference<get_at_rettype>::value, "Read-only vectors not implemented");
 
 		public:
-			static typename VectorWrapperInfo<T>::scalar_type& get_at ( T& parVec, std::size_t parIndex );
+			static get_at_rettype get_at ( T& parVec, std::size_t parIndex );
 		};
 
 		template <typename V, bool Enabled> struct Vec1Promotion;
