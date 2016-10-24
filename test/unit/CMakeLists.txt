@@ -5,6 +5,7 @@ add_executable(${PROJECT_NAME}
 	test_conversions.cpp
 	test_ops.cpp
 	example.cpp
+	test_get_at.cpp
 )
 
 target_link_libraries(${PROJECT_NAME}
