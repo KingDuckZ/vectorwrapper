@@ -23,7 +23,7 @@ namespace vwr {
 		template <typename V>
 		template <typename T>
 		VecBase<V>::VecBase (const T& parInit, typename std::enable_if<std::is_same<T, scalar_type>::value and not std::is_same<scalar_type, vector_type>::value, bool>::type) {
-			for (int z = 0; z < VectorWrapperInfo<V>::dimensions; ++z) {
+			for (std::size_t z = 0; z < VectorWrapperInfo<V>::dimensions; ++z) {
 				VecGetter<V>::get_at(m_wrapped, z) = parInit;
 			}
 		}

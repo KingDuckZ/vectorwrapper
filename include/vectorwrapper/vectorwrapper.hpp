@@ -184,7 +184,7 @@ namespace vwr {
 		};
 
 		template <typename T, bool=HasOffsetXEnum<VectorWrapperInfo<T>>::value and std::is_standard_layout<T>::value>
-		class VecGetter;
+		struct VecGetter;
 		template <typename T>
 		struct VecGetter<T, true> {
 			static typename VectorWrapperInfo<T>::scalar_type& get_at ( T& parVec, std::size_t parIndex );
