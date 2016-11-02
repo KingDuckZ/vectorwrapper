@@ -29,6 +29,7 @@ You still need to type some code in order to get started using the vector wrappe
 ## Features ##
 ### Build time configuration ###
 * VWR_WITH_IMPLICIT_CONVERSIONS (default: not defined) Enable implicit conversions between wrappers of vectors of different type (see Automated conversions).
+* VWR_STATIC_CAST_RESULTS (default: not defined) static_cast the result of binary operators in order to silence some compiler warnings. For example, when compiling with gcc -Wconvertion, given three short int variables a, b and c, c=a+b will generate a warning as a+b gets promoted into an int. Enabling this macro causes the previous example to become c=static_cast<short int>(a+b).
 
 ### Automated conversion ###
 You can assign or construct a `Vec<A>` from a `Vec<B>`, provided they have the same dimensions and the assignemnt operator is able to convert B's scalar type to that of A. You need to define VWR_WITH_IMPLICIT_CONVERSIONS for this to work.
