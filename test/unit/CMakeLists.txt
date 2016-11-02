@@ -15,3 +15,9 @@ target_link_libraries(${PROJECT_NAME}
 target_compile_definitions(${PROJECT_NAME}
 	PRIVATE VWR_WITH_IMPLICIT_CONVERSIONS
 )
+
+add_test(
+	NAME TestNormal
+	WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+	COMMAND ${PROJECT_NAME}
+)
