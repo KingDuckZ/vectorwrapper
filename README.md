@@ -3,8 +3,8 @@
 
 ## Motivation ##
 ### Short version ###
-A vector wrapper is mainly useful if used as an adapter between vectors from different libraries. It basically removes the need to explicitly construct a vector of type B when you have a vector of type A.
-It's roughly equivalent to using a reinterpret_cast on your vectors, but the code tries really hard to make sure the cast is valid in all cases, wrapping it nicely behind a clean interface. Implicit constructors also allow to convert easily from one type to the other.
+A vector wrapper is useful if used as an adapter between vectors from different libraries. It removes the need to explicitly construct a vector of type B when you have a vector of type A.
+It's roughly equivalent to using a reinterpret_cast on your vectors, but the code tries really hard to make sure the cast is valid in all cases, wrapping safety checks nicely behind a clean interface. Implicit constructors also allow to convert easily from one type to the other (if enabled at build time).
 
 ### Long version ###
 We all need vectors in our code, and there are quite a few implementations out there. They all do their job, and in terms of interface they are pretty similar to each other, but not *exactly* the same thing.
@@ -27,8 +27,11 @@ Unfortunately the fact that you use `Vec<std::array<float, 3>>` and `Vec<Ogre::V
 You still need to type some code in order to get started using the vector wrapper class, which is basically your custom implementation of a struct listing informations about the wrapped type. That's not a lot of code.
 
 ## Features ##
+### Build time configuration ###
+* VWR_WITH_IMPLICIT_CONVERSIONS (default: not defined) Enable implicit conversions between wrappers of vectors of different type (see Automated conversions).
+
 ### Automated conversion ###
-You can assign or construct a `Vec<A>` from a `Vec<B>`, provided they have the same dimensions and the assignemnt operator is able to convert B's scalar type to that of A.
+You can assign or construct a `Vec<A>` from a `Vec<B>`, provided they have the same dimensions and the assignemnt operator is able to convert B's scalar type to that of A. You need to define VWR_WITH_IMPLICIT_CONVERSIONS for this to work.
 
 ### Access the wrapped type ###
 Through the `data()` method you can always obtain a ref to the wrapped type.

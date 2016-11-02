@@ -11,3 +11,7 @@ add_executable(${PROJECT_NAME}
 target_link_libraries(${PROJECT_NAME}
 	gtest
 )
+
+target_compile_definitions(${PROJECT_NAME}
+	PRIVATE VWR_WITH_IMPLICIT_CONVERSIONS
+)

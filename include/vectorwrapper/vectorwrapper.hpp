@@ -39,8 +39,10 @@ namespace vwr {
 		define_has_method(get_at, GetAt);
 		define_has_enum(cast_ignore_trailing_properties, CastIgnoreTrailingProperties);
 
+#if defined(VWR_WITH_IMPLICIT_CONVERSIONS)
 		template <typename V1, typename V2, std::size_t D>
 		Vec<V1>& assign ( Vec<V1, D>& parLeft, const Vec<V2, D>& parRight );
+#endif
 		template <typename V>
 		Vec<V>& assign_same_type ( Vec<V>& parLeft, const Vec<V>& parRight );
 
@@ -318,11 +320,13 @@ namespace vwr {
 		explicit Vec ( const vector_type& parIn ) : implem::VecBase<V>(parIn) { }
 		template <typename T>
 		explicit Vec ( const typename std::enable_if<std::is_same<T, scalar_type>::value and not std::is_same<scalar_type, vector_type>::value, T>::type& parX ) : implem::VecBase<V>(parX) { }
+#if defined(VWR_WITH_IMPLICIT_CONVERSIONS)
 		template <typename V2> Vec ( const Vec<V2, dimensions>& parOther ) { implem::assign(*this, parOther); }
-
-		Vec& operator= ( const Vec& parOther ) { return implem::assign_same_type(*this, parOther); }
 		template <typename V2>
 		Vec& operator= ( const Vec<V2, dimensions>& parOther ) { return implem::assign(*this, parOther); }
+#endif
+
+		Vec& operator= ( const Vec& parOther ) { return implem::assign_same_type(*this, parOther); }
 	};
 
 	template <typename V>
@@ -344,11 +348,13 @@ namespace vwr {
 		explicit Vec ( const vector_type& parIn ) : implem::VecBase<V>(parIn) { }
 		explicit Vec ( const scalar_type parX ) : implem::VecBase<V>(parX) { }
 		Vec ( scalar_type parX, scalar_type parY ) : implem::VecBase<V>(parX, parY) { }
+#if defined(VWR_WITH_IMPLICIT_CONVERSIONS)
 		template <typename V2> Vec ( const Vec<V2, dimensions>& parOther ) { implem::assign(*this, parOther); }
-
-		Vec& operator= ( const Vec& parOther ) { return implem::assign_same_type(*this, parOther); }
 		template <typename V2>
 		Vec& operator= ( const Vec<V2, dimensions>& parOther ) { return implem::assign(*this, parOther); }
+#endif
+
+		Vec& operator= ( const Vec& parOther ) { return implem::assign_same_type(*this, parOther); }
 		Vec& operator= ( const vector_type& parOther ) { this->data() = parOther; return *this; }
 	};
 
@@ -372,11 +378,13 @@ namespace vwr {
 		explicit Vec ( const vector_type& parIn ) : implem::VecBase<V>(parIn) { }
 		explicit Vec ( const scalar_type parX ) : implem::VecBase<V>(parX) { }
 		Vec ( scalar_type parX, scalar_type parY, scalar_type parZ ) : implem::VecBase<V>(parX, parY, parZ) { }
+#if defined(VWR_WITH_IMPLICIT_CONVERSIONS)
 		template <typename V2> Vec ( const Vec<V2, dimensions>& parOther ) { implem::assign(*this, parOther); }
-
-		Vec& operator= ( const Vec& parOther ) { return implem::assign_same_type(*this, parOther); }
 		template <typename V2>
 		Vec& operator= ( const Vec<V2, dimensions>& parOther ) { return implem::assign(*this, parOther); }
+#endif
+
+		Vec& operator= ( const Vec& parOther ) { return implem::assign_same_type(*this, parOther); }
 		Vec& operator= ( const vector_type& parOther ) { this->data() = parOther; return *this; }
 	};
 
