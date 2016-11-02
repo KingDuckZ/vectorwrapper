@@ -62,7 +62,7 @@ namespace vwr {
 		typedef float scalar_type;
 		typedef SimpleVector2 higher_vector_type;
 
-		static scalar_type& get_at (std::size_t, vector_type& parVector) {
+		static scalar_type& get_at (size_type, vector_type& parVector) {
 			return parVector;
 		}
 	};

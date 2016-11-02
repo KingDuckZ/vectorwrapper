@@ -23,7 +23,7 @@ namespace vwr {
 		template <typename V>
 		template <typename T>
 		VecBase<V>::VecBase (const T& parInit, typename std::enable_if<std::is_same<T, scalar_type>::value and not std::is_same<scalar_type, vector_type>::value, bool>::type) {
-			for (std::size_t z = 0; z < VectorWrapperInfo<V>::dimensions; ++z) {
+			for (size_type z = 0; z < VectorWrapperInfo<V>::dimensions; ++z) {
 				VecGetter<V>::get_at(m_wrapped, z) = parInit;
 			}
 		}
@@ -41,12 +41,12 @@ namespace vwr {
 			VecGetter<V>::get_at(m_wrapped, 0) = parX;
 			VecGetter<V>::get_at(m_wrapped, 1) = parY;
 
-			assign_values(bt::index_range<2, dimensions>(), std::forward<Args>(parArgs)...);
+			assign_values(bt::number_range<size_type, 2, dimensions>(), std::forward<Args>(parArgs)...);
 		}
 
 		template <typename V>
-		template <std::size_t... I, typename... Args>
-		void VecBase<V>::assign_values (const bt::index_seq<I...>&, Args... parArgs) {
+		template <size_type... I, typename... Args>
+		void VecBase<V>::assign_values (const bt::number_seq<size_type, I...>&, Args... parArgs) {
 			static_assert(sizeof...(I) == sizeof...(Args), "Argument count and indices count mismatch");
 
 			std::initializer_list<scalar_type> t {
@@ -56,25 +56,13 @@ namespace vwr {
 		}
 
 		template <typename V>
-		auto VecBase<V>::operator[] (std::size_t parIndex) -> scalar_type& {
+		auto VecBase<V>::operator[] (size_type parIndex) -> scalar_type& {
 			return VecGetter<V>::get_at(m_wrapped, parIndex);
 		}
 
 		template <typename V>
-		auto VecBase<V>::operator[] (int parIndex) -> scalar_type& {
-			assert(parIndex >= 0);
-			return VecGetter<V>::get_at(m_wrapped, static_cast<std::size_t>(parIndex));
-		}
-
-		template <typename V>
-		auto VecBase<V>::operator[] (std::size_t parIndex) const -> const scalar_type& {
+		auto VecBase<V>::operator[] (size_type parIndex) const -> const scalar_type& {
 			return VecGetter<V>::get_at(const_cast<vector_type&>(m_wrapped), parIndex);
-		}
-
-		template <typename V>
-		auto VecBase<V>::operator[] (int parIndex) const -> const scalar_type& {
-			assert(parIndex >= 0);
-			return VecGetter<V>::get_at(const_cast<vector_type&>(m_wrapped), static_cast<std::size_t>(parIndex));
 		}
 
 		template <typename V>
@@ -107,7 +95,7 @@ namespace vwr {
 		template <typename V2>
 		VecBase<V>& VecBase<V>::operator+= (const VecBase<V2>& parOther) {
 			static_assert(static_cast<int>(VectorWrapperInfo<V>::dimensions) == static_cast<int>(VectorWrapperInfo<V2>::dimensions), "Dimensions mismatch");
-			for (int z = 0; z < VectorWrapperInfo<V>::dimensions; ++z) {
+			for (size_type z = 0; z < VectorWrapperInfo<V>::dimensions; ++z) {
 				(*this)[z] += parOther[z];
 			}
 			return *this;
@@ -116,7 +104,7 @@ namespace vwr {
 		template <typename V2>
 		VecBase<V>& VecBase<V>::operator-= (const VecBase<V2>& parOther) {
 			static_assert(static_cast<int>(VectorWrapperInfo<V>::dimensions) == static_cast<int>(VectorWrapperInfo<V2>::dimensions), "Dimensions mismatch");
-			for (int z = 0; z < VectorWrapperInfo<V>::dimensions; ++z) {
+			for (size_type z = 0; z < VectorWrapperInfo<V>::dimensions; ++z) {
 				(*this)[z] -= parOther[z];
 			}
 			return *this;
@@ -125,7 +113,7 @@ namespace vwr {
 		template <typename V2>
 		VecBase<V>& VecBase<V>::operator*= (const VecBase<V2>& parOther) {
 			static_assert(static_cast<int>(VectorWrapperInfo<V>::dimensions) == static_cast<int>(VectorWrapperInfo<V2>::dimensions), "Dimensions mismatch");
-			for (int z = 0; z < VectorWrapperInfo<V>::dimensions; ++z) {
+			for (size_type z = 0; z < VectorWrapperInfo<V>::dimensions; ++z) {
 				(*this)[z] *= parOther[z];
 			}
 			return *this;
@@ -141,24 +129,24 @@ namespace vwr {
 		}
 
 		template <typename T>
-		typename VectorWrapperInfo<T>::scalar_type& VecGetter<T, true>::get_at (T& parVec, std::size_t parIndex) {
+		typename VectorWrapperInfo<T>::scalar_type& VecGetter<T, true>::get_at (T& parVec, size_type parIndex) {
 			assert(parIndex < VectorWrapperInfo<T>::dimensions);
 			typedef T vector_type;
 			typedef typename VectorWrapperInfo<T>::scalar_type scalar_type;
 			static_assert(std::is_standard_layout<vector_type>::value, "Can't use this function with this vector_type");
-			const offsets_array_wrapper<T> oaw((bt::index_range<0, VectorWrapperInfo<T>::dimensions>()));
+			const offsets_array_wrapper<T> oaw((bt::number_range<size_type, 0, VectorWrapperInfo<T>::dimensions>()));
 			return *reinterpret_cast<scalar_type*>(reinterpret_cast<char*>(&parVec) + oaw.offsets[parIndex]);
 		}
 
 		template <typename T>
-		auto VecGetter<T, false>::get_at (T& parVec, std::size_t parIndex) -> get_at_rettype {
+		auto VecGetter<T, false>::get_at (T& parVec, size_type parIndex) -> get_at_rettype {
 			assert(parIndex < VectorWrapperInfo<T>::dimensions);
 			return VectorWrapperInfo<T>::get_at(parIndex, parVec);
 		}
 
-		template <typename V1, typename V2, std::size_t D>
+		template <typename V1, typename V2, size_type D>
 		inline Vec<V1>& assign (Vec<V1, D>& parLeft, const Vec<V2, D>& parRight) {
-			for (std::size_t z = 0; z < D; ++z) {
+			for (size_type z = 0; z < D; ++z) {
 				parLeft[z] = parRight[z];
 			}
 			return parLeft;
@@ -284,9 +272,9 @@ namespace vwr {
 			return this_vec[2];
 		}
 
-		template <typename T, std::size_t S>
-		template <std::size_t... I>
-		offsets_array_wrapper<T, S>::offsets_array_wrapper (const bt::index_seq<I...>&) :
+		template <typename T, size_type S>
+		template <size_type... I>
+		offsets_array_wrapper<T, S>::offsets_array_wrapper (const bt::number_seq<size_type, I...>&) :
 			offsets({get_offset_enum_from_index<T, I>::value...})
 		{
 			static_assert(sizeof...(I) == S, "Bug?");
@@ -309,7 +297,7 @@ namespace vwr {
 	inline bool operator== (const Vec<V1>& parLeft, const Vec<V2>& parRight) {
 		static_assert(static_cast<int>(VectorWrapperInfo<V1>::dimensions) == static_cast<int>(VectorWrapperInfo<V2>::dimensions), "Dimensions mismatch");
 		bool retval = true;
-		for (int z = 0; z < VectorWrapperInfo<V1>::dimensions; ++z) {
+		for (size_type z = 0; z < VectorWrapperInfo<V1>::dimensions; ++z) {
 			retval &= (parLeft[z] == parRight[z]);
 		}
 		return retval;
@@ -318,7 +306,7 @@ namespace vwr {
 	inline bool operator< (const Vec<V1>& parLeft, const Vec<V2>& parRight) {
 		static_assert(static_cast<int>(VectorWrapperInfo<V1>::dimensions) == static_cast<int>(VectorWrapperInfo<V2>::dimensions), "Dimensions mismatch");
 		bool retval = true;
-		for (int z = 0; z < VectorWrapperInfo<V1>::dimensions; ++z) {
+		for (size_type z = 0; z < VectorWrapperInfo<V1>::dimensions; ++z) {
 			retval &= (parLeft[z] < parRight[z]);
 		}
 		return retval;
@@ -327,7 +315,7 @@ namespace vwr {
 	template <typename V>
 	inline bool operator== (const Vec<V>& parLeft, const typename VectorWrapperInfo<V>::scalar_type& parRight) {
 		bool retval = true;
-		for (int z = 0; z < VectorWrapperInfo<V>::dimensions; ++z) {
+		for (size_type z = 0; z < VectorWrapperInfo<V>::dimensions; ++z) {
 			retval &= (parLeft[z] == parRight);
 		}
 		return retval;
@@ -335,7 +323,7 @@ namespace vwr {
 	template <typename V>
 	inline bool operator< ( const Vec<V>& parLeft, const typename VectorWrapperInfo<V>::scalar_type& parRight) {
 		bool retval = true;
-		for (int z = 0; z < VectorWrapperInfo<V>::dimensions; ++z) {
+		for (size_type z = 0; z < VectorWrapperInfo<V>::dimensions; ++z) {
 			retval &= (parLeft[z] < parRight);
 		}
 		return retval;
@@ -366,7 +354,7 @@ namespace vwr {
 
 		static_assert(static_cast<int>(VectorWrapperInfo<V1>::dimensions) == static_cast<int>(VectorWrapperInfo<V2>::dimensions), "Dimensions mismatch");
 		Vec<typename std::common_type<V1, V2>::type> retval;
-		for (int z = 0; z < VectorWrapperInfo<V1>::dimensions; ++z) {
+		for (size_type z = 0; z < VectorWrapperInfo<V1>::dimensions; ++z) {
 #if defined(VWR_STATIC_CAST_RESULTS)
 			retval[z] = static_cast<scalar_type>(parLeft[z] + parRight[z]);
 #else
@@ -383,7 +371,7 @@ namespace vwr {
 
 		static_assert(static_cast<int>(VectorWrapperInfo<V1>::dimensions) == static_cast<int>(VectorWrapperInfo<V2>::dimensions), "Dimensions mismatch");
 		Vec<typename std::common_type<V1, V2>::type> retval;
-		for (int z = 0; z < VectorWrapperInfo<V1>::dimensions; ++z) {
+		for (size_type z = 0; z < VectorWrapperInfo<V1>::dimensions; ++z) {
 #if defined(VWR_STATIC_CAST_RESULTS)
 			retval[z] = static_cast<scalar_type>(parLeft[z] - parRight[z]);
 #else
@@ -400,7 +388,7 @@ namespace vwr {
 
 		static_assert(static_cast<int>(VectorWrapperInfo<V1>::dimensions) == static_cast<int>(VectorWrapperInfo<V2>::dimensions), "Dimensions mismatch");
 		Vec<typename std::common_type<V1, V2>::type> retval;
-		for (int z = 0; z < VectorWrapperInfo<V1>::dimensions; ++z) {
+		for (size_type z = 0; z < VectorWrapperInfo<V1>::dimensions; ++z) {
 #if defined(VWR_STATIC_CAST_RESULTS)
 			retval[z] = static_cast<scalar_type>(parLeft[z] * parRight[z]);
 #else
@@ -417,7 +405,7 @@ namespace vwr {
 
 		static_assert(static_cast<int>(VectorWrapperInfo<V1>::dimensions) == static_cast<int>(VectorWrapperInfo<V2>::dimensions), "Dimensions mismatch");
 		Vec<typename std::common_type<V1, V2>::type> retval;
-		for (int z = 0; z < VectorWrapperInfo<V1>::dimensions; ++z) {
+		for (size_type z = 0; z < VectorWrapperInfo<V1>::dimensions; ++z) {
 #if defined(VWR_STATIC_CAST_RESULTS)
 			retval[z] = static_cast<scalar_type>(parLeft[z] / parRight[z]);
 #else

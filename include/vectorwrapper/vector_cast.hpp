@@ -17,12 +17,14 @@
 #ifndef idE24EF7737A7F4882B2BF254F0A3EEC34
 #define idE24EF7737A7F4882B2BF254F0A3EEC34
 
-#include <utility>
+#include "vectorwrapper/sequence_bt.hpp"
+#include "vectorwrapper/size_type.hpp"
+#include "vectorwrapper/vectorwrapper.hpp"
 
 namespace vwr {
 	namespace implem {
-		template <typename TO, typename FROM, std::size_t... I>
-		Vec<TO> vector_cast (const Vec<FROM>& parVec, Vec<TO>*, std::index_sequence<I...>) {
+		template <typename TO, typename FROM, size_type... I>
+		Vec<TO> vector_cast (const Vec<FROM>& parVec, Vec<TO>*, bt::number_seq<size_type, I...>) {
 			static_assert(
 				static_cast<int>(Vec<TO>::dimensions) == static_cast<int>(Vec<FROM>::dimensions),
 				"Mismatching dimensions"
@@ -37,7 +39,7 @@ namespace vwr {
 	template <typename TOVec, typename FROM>
 	TOVec vector_cast (const Vec<FROM>& parVec) {
 		TOVec* const to = nullptr;
-		return implem::vector_cast(parVec, to, std::make_index_sequence<Vec<FROM>::dimensions>());
+		return implem::vector_cast(parVec, to, bt::number_range<size_type, 0, Vec<FROM>::dimensions>());
 	}
 } //namespace vwr
 

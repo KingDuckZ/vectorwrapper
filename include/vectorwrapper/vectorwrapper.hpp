@@ -19,7 +19,7 @@
 
 #include "vectorwrapper/has_method.hpp"
 #include "vectorwrapper/sequence_bt.hpp"
-#include <cstddef>
+#include "vectorwrapper/size_type.hpp"
 #include <ciso646>
 #include <type_traits>
 #include <array>
@@ -29,7 +29,7 @@ namespace vwr {
 	template <typename V>
 	struct VectorWrapperInfo;
 
-	template <typename V, std::size_t S=VectorWrapperInfo<V>::dimensions>
+	template <typename V, size_type S=VectorWrapperInfo<V>::dimensions>
 	class Vec;
 
 	namespace implem {
@@ -40,13 +40,13 @@ namespace vwr {
 		define_has_enum(cast_ignore_trailing_properties, CastIgnoreTrailingProperties);
 
 #if defined(VWR_WITH_IMPLICIT_CONVERSIONS)
-		template <typename V1, typename V2, std::size_t D>
+		template <typename V1, typename V2, size_type D>
 		Vec<V1>& assign ( Vec<V1, D>& parLeft, const Vec<V2, D>& parRight );
 #endif
 		template <typename V>
 		Vec<V>& assign_same_type ( Vec<V>& parLeft, const Vec<V>& parRight );
 
-		template <typename T, std::size_t I> struct get_offset_enum_from_index;
+		template <typename T, size_type I> struct get_offset_enum_from_index;
 		template <typename T> struct get_offset_enum_from_index<T, 0> {
 			enum { value = VectorWrapperInfo<T>::offset_x };
 		};
@@ -60,7 +60,7 @@ namespace vwr {
 			enum { value = VectorWrapperInfo<T>::offset_w };
 		};
 
-		template <typename T, std::size_t S=VectorWrapperInfo<T>::dimensions> struct min_offset {
+		template <typename T, size_type S=VectorWrapperInfo<T>::dimensions> struct min_offset {
 			enum {
 				value = (
 					static_cast<int>(get_offset_enum_from_index<T, S-1>::value) < static_cast<int>(min_offset<T, S-1>::value) ?
@@ -76,7 +76,7 @@ namespace vwr {
 		template <
 			typename T,
 			typename U,
-			std::size_t S=(
+			size_type S=(
 				static_cast<int>(VectorWrapperInfo<T>::dimensions) < static_cast<int>(VectorWrapperInfo<U>::dimensions) ?
 					static_cast<int>(VectorWrapperInfo<T>::dimensions)
 				:
@@ -150,10 +150,8 @@ namespace vwr {
 			VecBase ( scalar_type parX, scalar_type parY, Args... parArgs );
 			~VecBase ( void ) = default;
 
-			scalar_type& operator[] ( std::size_t parIndex );
-			scalar_type& operator[] ( int parIndex );
-			const scalar_type& operator[] ( std::size_t parIndex ) const;
-			const scalar_type& operator[] ( int parIndex ) const;
+			scalar_type& operator[] ( size_type parIndex );
+			const scalar_type& operator[] ( size_type parIndex ) const;
 
 			vector_type& data ( void ) { return m_wrapped; }
 			const vector_type& data ( void ) const { return m_wrapped; }
@@ -169,16 +167,16 @@ namespace vwr {
 			template <typename V2> VecBase& operator/= ( const VecBase<V2>& parOther );
 
 		private:
-			template <std::size_t... I, typename... Args>
-			void assign_values (const bt::index_seq<I...>&, Args... parArgs);
+			template <size_type... I, typename... Args>
+			void assign_values (const bt::number_seq<size_type, I...>&, Args... parArgs);
 
 			vector_type m_wrapped;
 		};
 
-		template <typename T, std::size_t S=VectorWrapperInfo<T>::dimensions>
+		template <typename T, size_type S=VectorWrapperInfo<T>::dimensions>
 		struct offsets_array_wrapper {
-			template <std::size_t... I>
-			offsets_array_wrapper ( const bt::index_seq<I...>& );
+			template <size_type... I>
+			offsets_array_wrapper ( const bt::number_seq<size_type, I...>& );
 
 			const std::array<unsigned int, S> offsets;
 		};
@@ -187,7 +185,7 @@ namespace vwr {
 		struct VecGetter;
 		template <typename T>
 		struct VecGetter<T, true> {
-			static typename VectorWrapperInfo<T>::scalar_type& get_at ( T& parVec, std::size_t parIndex );
+			static typename VectorWrapperInfo<T>::scalar_type& get_at ( T& parVec, size_type parIndex );
 		};
 		template <typename T>
 		struct VecGetter<T, false> {
@@ -195,14 +193,14 @@ namespace vwr {
 			static_assert(HasGetAtMethod<VectorWrapperInfo<T>>::value, "You must provide a get_at() static method for this vector_type");
 			typedef typename VectorWrapperInfo<T>::scalar_type scalar_type;
 			typedef T vector_type;
-			using get_at_func = decltype(&VectorWrapperInfo<T>::get_at)(std::size_t, vector_type&);
+			using get_at_func = decltype(&VectorWrapperInfo<T>::get_at)(size_type, vector_type&);
 			using get_at_rettype = typename std::result_of<get_at_func>::type;
 
 			static_assert(not std::is_rvalue_reference<get_at_rettype>::value, "rvalue ref return types not implemented");
 			static_assert(std::is_lvalue_reference<get_at_rettype>::value, "Read-only vectors not implemented");
 
 		public:
-			static get_at_rettype get_at ( T& parVec, std::size_t parIndex );
+			static get_at_rettype get_at ( T& parVec, size_type parIndex );
 		};
 
 		template <typename V, bool Enabled> struct Vec1Promotion;
@@ -258,7 +256,7 @@ namespace vwr {
 			lower_vector_type yz ( void ) const;
 		};
 
-		template <typename V, std::size_t D>
+		template <typename V, size_type D>
 		struct VecAccessors;
 
 		//Workaround for visual studio - VecAccessors<V, 3> should inherit from
@@ -295,7 +293,7 @@ namespace vwr {
 		};
 	} //namespace implem
 
-	template <typename V, std::size_t S>
+	template <typename V, size_type S>
 	class Vec : public implem::VecBase<V> {
 	public:
 		enum {
