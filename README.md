@@ -34,6 +34,9 @@ You still need to type some code in order to get started using the vector wrappe
 ### Automated conversion ###
 You can assign or construct a `Vec<A>` from a `Vec<B>`, provided they have the same dimensions and the assignemnt operator is able to convert B's scalar type to that of A. You need to define VWR_WITH_IMPLICIT_CONVERSIONS for this to work.
 
+### Manual conversions ###
+You can convert one vector to the other using vector_cast. For example, auto b = vector_cast<float2>(a); will create a temporary of type float2 the whose elements are a static_cast'ed copy of the elements in a and assign it to b. You need to include vectorwrapper/vector_cast.hpp.
+
 ### Access the wrapped type ###
 Through the `data()` method you can always obtain a ref to the wrapped type.
 
