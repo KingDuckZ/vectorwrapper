@@ -14,10 +14,6 @@ target_link_libraries(${PROJECT_NAME}
 	gtest
 )
 
-target_compile_definitions(${PROJECT_NAME}
-	PRIVATE VWR_STATIC_CAST_RESULTS
-)
-
 set_target_properties(${PROJECT_NAME} PROPERTIES CXX_STANDARD_REQUIRED ON)
 set_target_properties(${PROJECT_NAME} PROPERTIES CXX_STANDARD 14)
 

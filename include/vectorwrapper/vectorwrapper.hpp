@@ -296,6 +296,9 @@ namespace vwr {
 		constexpr bool compare ( const Vec<V1>& parLeft, const Vec<V2>& parRight, Op parComposeOp, Op parOp, bt::number_seq<size_type> );
 		template <bool LastVal, typename V1, typename V2, typename ComposeOp, typename Op, size_type I1, size_type... I>
 		bool compare ( const Vec<V1>& parLeft, const Vec<V2>& parRight, ComposeOp parComposeOp, Op parOp, bt::number_seq<size_type, I1, I...> );
+
+		template <typename V1, typename V2, typename Op, size_type... I>
+		Vec<typename std::common_type<V1, V2>::type> binary_op ( const Vec<V1>& parLeft, const Vec<V2>& parRight, Op parOp, const Vec<typename std::common_type<V1, V2>::type>& parLastVal, bt::number_seq<size_type, I...> );
 	} //namespace implem
 
 	template <typename V, size_type S>
@@ -429,6 +432,8 @@ namespace vwr {
 	Vec<typename std::common_type<V1, V2>::type> operator* ( const Vec<V1>& parLeft, const Vec<V2>& parRight );
 	template <typename V1, typename V2>
 	Vec<typename std::common_type<V1, V2>::type> operator/ ( const Vec<V1>& parLeft, const Vec<V2>& parRight );
+	template <typename V1, typename V2>
+	Vec<typename std::common_type<V1, V2>::type> operator% ( const Vec<V1>& parLeft, const Vec<V2>& parRight );
 } //namespace vwr
 
 #include "vectorwrapper/vectorwrapper.inl"

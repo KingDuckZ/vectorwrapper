@@ -291,6 +291,13 @@ namespace vwr {
 			static_assert(I1 < VectorWrapperInfo<V1>::dimensions, "Index out of range");
 			return parComposeOp(parOp(parLeft[I1], parRight[I1]), compare<LastVal>(parLeft, parRight, parComposeOp, parOp, bt::number_seq<size_type, I...>()));
 		}
+
+		template <typename V1, typename V2, typename Op, size_type... I>
+		inline
+		Vec<typename std::common_type<V1, V2>::type> binary_op (const Vec<V1>& parLeft, const Vec<V2>& parRight, Op parOp, bt::number_seq<size_type, I...>) {
+			typedef Vec<typename std::common_type<V1, V2>::type> return_type;
+			return return_type(parOp(parLeft[I], parRight[I])...);
+		}
 	} //namespace implem
 
 	template <typename V> const Vec<V, 1> Vec<V, 1>::unit_x(scalar_type(1));
@@ -414,70 +421,52 @@ namespace vwr {
 
 	template <typename V1, typename V2>
 	inline Vec<typename std::common_type<V1, V2>::type> operator+ (const Vec<V1>& parLeft, const Vec<V2>& parRight) {
-#if defined(VWR_STATIC_CAST_RESULTS)
-		typedef typename VectorWrapperInfo<typename std::common_type<V1, V2>::type>::scalar_type scalar_type;
-#endif
-
 		static_assert(static_cast<int>(VectorWrapperInfo<V1>::dimensions) == static_cast<int>(VectorWrapperInfo<V2>::dimensions), "Dimensions mismatch");
-		Vec<typename std::common_type<V1, V2>::type> retval;
-		for (size_type z = 0; z < VectorWrapperInfo<V1>::dimensions; ++z) {
-#if defined(VWR_STATIC_CAST_RESULTS)
-			retval[z] = static_cast<scalar_type>(parLeft[z] + parRight[z]);
-#else
-			retval[z] = parLeft[z] + parRight[z];
-#endif
-		}
-		return retval;
+		return implem::binary_op(
+			parLeft,
+			parRight,
+			std::plus<typename std::common_type<typename VectorWrapperInfo<V1>::scalar_type, typename VectorWrapperInfo<V2>::scalar_type>::type>(),
+			bt::number_range<size_type, 0, VectorWrapperInfo<V1>::dimensions>()
+		);
 	}
 	template <typename V1, typename V2>
 	inline Vec<typename std::common_type<V1, V2>::type> operator- (const Vec<V1>& parLeft, const Vec<V2>& parRight) {
-#if defined(VWR_STATIC_CAST_RESULTS)
-		typedef typename VectorWrapperInfo<typename std::common_type<V1, V2>::type>::scalar_type scalar_type;
-#endif
-
 		static_assert(static_cast<int>(VectorWrapperInfo<V1>::dimensions) == static_cast<int>(VectorWrapperInfo<V2>::dimensions), "Dimensions mismatch");
-		Vec<typename std::common_type<V1, V2>::type> retval;
-		for (size_type z = 0; z < VectorWrapperInfo<V1>::dimensions; ++z) {
-#if defined(VWR_STATIC_CAST_RESULTS)
-			retval[z] = static_cast<scalar_type>(parLeft[z] - parRight[z]);
-#else
-			retval[z] = parLeft[z] - parRight[z];
-#endif
-		}
-		return retval;
+		return implem::binary_op(
+			parLeft,
+			parRight,
+			std::minus<typename std::common_type<typename VectorWrapperInfo<V1>::scalar_type, typename VectorWrapperInfo<V2>::scalar_type>::type>(),
+			bt::number_range<size_type, 0, VectorWrapperInfo<V1>::dimensions>()
+		);
 	}
 	template <typename V1, typename V2>
 	inline Vec<typename std::common_type<V1, V2>::type> operator* (const Vec<V1>& parLeft, const Vec<V2>& parRight) {
-#if defined(VWR_STATIC_CAST_RESULTS)
-		typedef typename VectorWrapperInfo<typename std::common_type<V1, V2>::type>::scalar_type scalar_type;
-#endif
-
 		static_assert(static_cast<int>(VectorWrapperInfo<V1>::dimensions) == static_cast<int>(VectorWrapperInfo<V2>::dimensions), "Dimensions mismatch");
-		Vec<typename std::common_type<V1, V2>::type> retval;
-		for (size_type z = 0; z < VectorWrapperInfo<V1>::dimensions; ++z) {
-#if defined(VWR_STATIC_CAST_RESULTS)
-			retval[z] = static_cast<scalar_type>(parLeft[z] * parRight[z]);
-#else
-			retval[z] = parLeft[z] * parRight[z];
-#endif
-		}
-		return retval;
+		return implem::binary_op(
+			parLeft,
+			parRight,
+			std::multiplies<typename std::common_type<typename VectorWrapperInfo<V1>::scalar_type, typename VectorWrapperInfo<V2>::scalar_type>::type>(),
+			bt::number_range<size_type, 0, VectorWrapperInfo<V1>::dimensions>()
+		);
 	}
 	template <typename V1, typename V2>
 	inline Vec<typename std::common_type<V1, V2>::type> operator/ (const Vec<V1>& parLeft, const Vec<V2>& parRight) {
-#if defined(VWR_STATIC_CAST_RESULTS)
-		typedef typename VectorWrapperInfo<typename std::common_type<V1, V2>::type>::scalar_type scalar_type;
-#endif
-
 		static_assert(static_cast<int>(VectorWrapperInfo<V1>::dimensions) == static_cast<int>(VectorWrapperInfo<V2>::dimensions), "Dimensions mismatch");
-		Vec<typename std::common_type<V1, V2>::type> retval;
-		for (size_type z = 0; z < VectorWrapperInfo<V1>::dimensions; ++z) {
-#if defined(VWR_STATIC_CAST_RESULTS)
-			retval[z] = static_cast<scalar_type>(parLeft[z] / parRight[z]);
-#else
-			retval[z] = parLeft[z] / parRight[z];
-#endif
-		}
-		return retval;
+		return implem::binary_op(
+			parLeft,
+			parRight,
+			std::divides<typename std::common_type<typename VectorWrapperInfo<V1>::scalar_type, typename VectorWrapperInfo<V2>::scalar_type>::type>(),
+			bt::number_range<size_type, 0, VectorWrapperInfo<V1>::dimensions>()
+		);
+	}
+	template <typename V1, typename V2>
+	inline Vec<typename std::common_type<V1, V2>::type> operator% (const Vec<V1>& parLeft, const Vec<V2>& parRight) {
+		static_assert(static_cast<int>(VectorWrapperInfo<V1>::dimensions) == static_cast<int>(VectorWrapperInfo<V2>::dimensions), "Dimensions mismatch");
+		return implem::binary_op(
+			parLeft,
+			parRight,
+			std::modulus<typename std::common_type<typename VectorWrapperInfo<V1>::scalar_type, typename VectorWrapperInfo<V2>::scalar_type>::type>(),
+			bt::number_range<size_type, 0, VectorWrapperInfo<V1>::dimensions>()
+		);
 	}
 } //namespace vwr
