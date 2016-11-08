@@ -291,6 +291,11 @@ namespace vwr {
 			scalar_type& x ( void );
 			const scalar_type& x ( void ) const;
 		};
+
+		template <bool LastVal, typename V1, typename V2, typename ComposeOp, typename Op>
+		constexpr bool compare ( const Vec<V1>& parLeft, const Vec<V2>& parRight, Op parComposeOp, Op parOp, bt::number_seq<size_type> );
+		template <bool LastVal, typename V1, typename V2, typename ComposeOp, typename Op, size_type I1, size_type... I>
+		bool compare ( const Vec<V1>& parLeft, const Vec<V2>& parRight, ComposeOp parComposeOp, Op parOp, bt::number_seq<size_type, I1, I...> );
 	} //namespace implem
 
 	template <typename V, size_type S>
@@ -392,7 +397,15 @@ namespace vwr {
 	template <typename V1, typename V2>
 	bool operator== ( const Vec<V1>& parLeft, const Vec<V2>& parRight );
 	template <typename V1, typename V2>
+	bool operator!= ( const Vec<V1>& parLeft, const Vec<V2>& parRight );
+	template <typename V1, typename V2>
 	bool operator< ( const Vec<V1>& parLeft, const Vec<V2>& parRight );
+	template <typename V1, typename V2>
+	bool operator> ( const Vec<V1>& parLeft, const Vec<V2>& parRight );
+	template <typename V1, typename V2>
+	bool operator<= ( const Vec<V1>& parLeft, const Vec<V2>& parRight );
+	template <typename V1, typename V2>
+	bool operator>= ( const Vec<V1>& parLeft, const Vec<V2>& parRight );
 
 	template <typename V>
 	bool operator== ( const Vec<V>& parLeft, const typename VectorWrapperInfo<V>::scalar_type& parRight );

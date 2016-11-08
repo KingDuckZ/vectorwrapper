@@ -279,6 +279,18 @@ namespace vwr {
 		{
 			static_assert(sizeof...(I) == S, "Bug?");
 		}
+
+		template <bool LastVal, typename V1, typename V2, typename ComposeOp, typename Op>
+		inline constexpr
+		bool compare (const Vec<V1>&, const Vec<V2>&, ComposeOp, Op, bt::number_seq<size_type>) {
+			return LastVal;
+		}
+		template <bool LastVal, typename V1, typename V2, typename ComposeOp, typename Op, size_type I1, size_type... I>
+		inline
+		bool compare (const Vec<V1>& parLeft, const Vec<V2>& parRight, ComposeOp parComposeOp, Op parOp, bt::number_seq<size_type, I1, I...>) {
+			static_assert(I1 < VectorWrapperInfo<V1>::dimensions, "Index out of range");
+			return parComposeOp(parOp(parLeft[I1], parRight[I1]), compare<LastVal>(parLeft, parRight, parComposeOp, parOp, bt::number_seq<size_type, I...>()));
+		}
 	} //namespace implem
 
 	template <typename V> const Vec<V, 1> Vec<V, 1>::unit_x(scalar_type(1));
@@ -296,20 +308,74 @@ namespace vwr {
 	template <typename V1, typename V2>
 	inline bool operator== (const Vec<V1>& parLeft, const Vec<V2>& parRight) {
 		static_assert(static_cast<int>(VectorWrapperInfo<V1>::dimensions) == static_cast<int>(VectorWrapperInfo<V2>::dimensions), "Dimensions mismatch");
-		bool retval = true;
-		for (size_type z = 0; z < VectorWrapperInfo<V1>::dimensions; ++z) {
-			retval &= (parLeft[z] == parRight[z]);
-		}
-		return retval;
+		typedef typename std::common_type<typename VectorWrapperInfo<V1>::scalar_type, typename VectorWrapperInfo<V2>::scalar_type>::type scalar_type;
+		return implem::compare<true>(
+			parLeft,
+			parRight,
+			std::logical_and<bool>(),
+			std::equal_to<scalar_type>(),
+			bt::number_range<size_type, 0, VectorWrapperInfo<V1>::dimensions>()
+		);
+	}
+	template <typename V1, typename V2>
+	inline bool operator!= (const Vec<V1>& parLeft, const Vec<V2>& parRight) {
+		static_assert(static_cast<int>(VectorWrapperInfo<V1>::dimensions) == static_cast<int>(VectorWrapperInfo<V2>::dimensions), "Dimensions mismatch");
+		typedef typename std::common_type<typename VectorWrapperInfo<V1>::scalar_type, typename VectorWrapperInfo<V2>::scalar_type>::type scalar_type;
+		return implem::compare<false>(
+			parLeft,
+			parRight,
+			std::logical_or<bool>(),
+			std::not_equal_to<scalar_type>(),
+			bt::number_range<size_type, 0, VectorWrapperInfo<V1>::dimensions>()
+		);
 	}
 	template <typename V1, typename V2>
 	inline bool operator< (const Vec<V1>& parLeft, const Vec<V2>& parRight) {
 		static_assert(static_cast<int>(VectorWrapperInfo<V1>::dimensions) == static_cast<int>(VectorWrapperInfo<V2>::dimensions), "Dimensions mismatch");
-		bool retval = true;
-		for (size_type z = 0; z < VectorWrapperInfo<V1>::dimensions; ++z) {
-			retval &= (parLeft[z] < parRight[z]);
-		}
-		return retval;
+		typedef typename std::common_type<typename VectorWrapperInfo<V1>::scalar_type, typename VectorWrapperInfo<V2>::scalar_type>::type scalar_type;
+		return implem::compare<true>(
+			parLeft,
+			parRight,
+			std::logical_and<bool>(),
+			std::less<scalar_type>(),
+			bt::number_range<size_type, 0, VectorWrapperInfo<V1>::dimensions>()
+		);
+	}
+	template <typename V1, typename V2>
+	inline bool operator> (const Vec<V1>& parLeft, const Vec<V2>& parRight) {
+		static_assert(static_cast<int>(VectorWrapperInfo<V1>::dimensions) == static_cast<int>(VectorWrapperInfo<V2>::dimensions), "Dimensions mismatch");
+		typedef typename std::common_type<typename VectorWrapperInfo<V1>::scalar_type, typename VectorWrapperInfo<V2>::scalar_type>::type scalar_type;
+		return implem::compare<true>(
+			parLeft,
+			parRight,
+			std::logical_and<bool>(),
+			std::greater<scalar_type>(),
+			bt::number_range<size_type, 0, VectorWrapperInfo<V1>::dimensions>()
+		);
+	}
+	template <typename V1, typename V2>
+	inline bool operator<= (const Vec<V1>& parLeft, const Vec<V2>& parRight) {
+		static_assert(static_cast<int>(VectorWrapperInfo<V1>::dimensions) == static_cast<int>(VectorWrapperInfo<V2>::dimensions), "Dimensions mismatch");
+		typedef typename std::common_type<typename VectorWrapperInfo<V1>::scalar_type, typename VectorWrapperInfo<V2>::scalar_type>::type scalar_type;
+		return implem::compare<true>(
+			parLeft,
+			parRight,
+			std::logical_and<bool>(),
+			std::less_equal<scalar_type>(),
+			bt::number_range<size_type, 0, VectorWrapperInfo<V1>::dimensions>()
+		);
+	}
+	template <typename V1, typename V2>
+	inline bool operator>= (const Vec<V1>& parLeft, const Vec<V2>& parRight) {
+		static_assert(static_cast<int>(VectorWrapperInfo<V1>::dimensions) == static_cast<int>(VectorWrapperInfo<V2>::dimensions), "Dimensions mismatch");
+		typedef typename std::common_type<typename VectorWrapperInfo<V1>::scalar_type, typename VectorWrapperInfo<V2>::scalar_type>::type scalar_type;
+		return implem::compare<true>(
+			parLeft,
+			parRight,
+			std::logical_and<bool>(),
+			std::greater_equal<scalar_type>(),
+			bt::number_range<size_type, 0, VectorWrapperInfo<V1>::dimensions>()
+		);
 	}
 
 	template <typename V>
