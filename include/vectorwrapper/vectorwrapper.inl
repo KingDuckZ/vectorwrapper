@@ -298,6 +298,12 @@ namespace vwr {
 			typedef Vec<typename std::common_type<V1, V2>::type> return_type;
 			return return_type(parOp(parLeft[I], parRight[I])...);
 		}
+
+		template <typename V, size_type... I>
+		inline
+		Vec<V> unary_operator_minus (const Vec<V>& parVec, bt::number_seq<size_type, I...>) {
+			return Vec<V>(-parVec[I]...);
+		}
 	} //namespace implem
 
 	template <typename V> const Vec<V, 1> Vec<V, 1>::unit_x(scalar_type(1));
@@ -400,6 +406,10 @@ namespace vwr {
 			retval &= (parLeft[z] < parRight);
 		}
 		return retval;
+	}
+	template <typename V>
+	inline Vec<V> operator- (const Vec<V>& parVec) {
+		return implem::unary_operator_minus(parVec, bt::number_range<size_type, 0, VectorWrapperInfo<V>::dimensions>());
 	}
 
 	template <typename V1, typename T>

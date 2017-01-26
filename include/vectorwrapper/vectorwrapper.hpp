@@ -414,6 +414,8 @@ namespace vwr {
 	bool operator== ( const Vec<V>& parLeft, const typename VectorWrapperInfo<V>::scalar_type& parRight );
 	template <typename V>
 	bool operator< ( const Vec<V>& parLeft, const typename VectorWrapperInfo<V>::scalar_type& parRight );
+	template <typename V>
+	Vec<V> operator- ( const Vec<V>& parVec );
 
 	template <typename V1, typename T>
 	bool operator> ( const Vec<V1>& parLeft, const T& parRight );
