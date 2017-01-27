@@ -281,6 +281,16 @@ namespace vwr {
 			scalar_type& x ( void );
 			scalar_type& y ( void );
 			scalar_type& z ( void );
+
+#if defined(VWR_EXTRA_ACCESSORS)
+			Vec<V> xy0 ( void ) const { return Vec<V>(x(), y(), scalar_type(0)); }
+			Vec<V> xy1 ( void ) const { return Vec<V>(x(), y(), scalar_type(1)); }
+			Vec<V> x0z ( void ) const { return Vec<V>(x(), scalar_type(0), z()); }
+			Vec<V> x1z ( void ) const { return Vec<V>(x(), scalar_type(1), z()); }
+			Vec<V> _0yz ( void ) const { return Vec<V>(scalar_type(0), y(), z()); }
+			Vec<V> _1yz ( void ) const { return Vec<V>(scalar_type(1), y(), z()); }
+			Vec<V> zxy ( void ) const { return Vec<V>(z(), x(), y()); }
+#endif
 		};
 
 		template <typename V>
@@ -291,6 +301,14 @@ namespace vwr {
 			const scalar_type& y ( void ) const;
 			scalar_type& x ( void );
 			scalar_type& y ( void );
+
+#if defined(VWR_EXTRA_ACCESSORS)
+			Vec<V> x0 ( void ) const { return Vec<V>(x(), scalar_type(0)); }
+			Vec<V> x1 ( void ) const { return Vec<V>(x(), scalar_type(1)); }
+			Vec<V> yx ( void ) const { return Vec<V>(y(), x()); }
+			Vec<V> _0y ( void ) const { return Vec<V>(scalar_type(0), y()); }
+			Vec<V> _1y ( void ) const { return Vec<V>(scalar_type(1), y()); }
+#endif
 		};
 
 		template <typename V>
