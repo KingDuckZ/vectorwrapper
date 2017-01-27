@@ -436,6 +436,27 @@ namespace vwr {
 	Vec<typename std::common_type<V1, V2>::type> operator/ ( const Vec<V1>& parLeft, const Vec<V2>& parRight );
 	template <typename V1, typename V2>
 	Vec<typename std::common_type<V1, V2>::type> operator% ( const Vec<V1>& parLeft, const Vec<V2>& parRight );
+
+	template <typename V>
+	Vec<V> operator+ ( const Vec<V>& parLeft, const typename Vec<V>::scalar_type& parRight );
+	template <typename V>
+	Vec<V> operator- ( const Vec<V>& parLeft, const typename Vec<V>::scalar_type& parRight );
+	template <typename V>
+	Vec<V> operator* ( const Vec<V>& parLeft, const typename Vec<V>::scalar_type& parRight );
+	template <typename V>
+	Vec<V> operator/ ( const Vec<V>& parLeft, const typename Vec<V>::scalar_type& parRight );
+	template <typename V>
+	Vec<V> operator% ( const Vec<V>& parLeft, const typename Vec<V>::scalar_type& parRight );
+	template <typename V>
+	Vec<V> operator+ ( const typename Vec<V>::scalar_type& parLeft, const Vec<V>& parRight );
+	template <typename V>
+	Vec<V> operator- ( const typename Vec<V>::scalar_type& parLeft, const Vec<V>& parRight );
+	template <typename V>
+	Vec<V> operator* ( const typename Vec<V>::scalar_type& parLeft, const Vec<V>& parRight );
+	template <typename V>
+	Vec<V> operator/ ( const typename Vec<V>::scalar_type& parLeft, const Vec<V>& parRight );
+	template <typename V>
+	Vec<V> operator% ( const typename Vec<V>::scalar_type& parLeft, const Vec<V>& parRight );
 } //namespace vwr
 
 #include "vectorwrapper/vectorwrapper.inl"

@@ -299,6 +299,20 @@ namespace vwr {
 			return return_type(parOp(parLeft[I], parRight[I])...);
 		}
 
+		template <typename V, typename Op, size_type... I>
+		inline
+		Vec<V> binary_op_scalar_right (const Vec<V>& parLeft, const typename Vec<V>::scalar_type& parRight, Op parOp, bt::number_seq<size_type, I...>) {
+			typedef Vec<V> return_type;
+			return return_type(parOp(parLeft[I], parRight)...);
+		}
+
+		template <typename V, typename Op, size_type... I>
+		inline
+		Vec<V> binary_op_scalar_left (const typename Vec<V>::scalar_type& parLeft, const Vec<V>& parRight, Op parOp, bt::number_seq<size_type, I...>) {
+			typedef Vec<V> return_type;
+			return return_type(parOp(parLeft, parRight[I])...);
+		}
+
 		template <typename V, size_type... I>
 		inline
 		Vec<V> unary_operator_minus (const Vec<V>& parVec, bt::number_seq<size_type, I...>) {
@@ -477,6 +491,98 @@ namespace vwr {
 			parRight,
 			std::modulus<typename std::common_type<typename VectorWrapperInfo<V1>::scalar_type, typename VectorWrapperInfo<V2>::scalar_type>::type>(),
 			bt::number_range<size_type, 0, VectorWrapperInfo<V1>::dimensions>()
+		);
+	}
+
+	template <typename V>
+	inline Vec<V> operator+ (const Vec<V>& parLeft, const typename Vec<V>::scalar_type& parRight) {
+		return implem::binary_op_scalar_right(
+			parLeft,
+			parRight,
+			std::plus<typename Vec<V>::scalar_type>(),
+			bt::number_range<size_type, 0, VectorWrapperInfo<V>::dimensions>()
+		);
+	}
+	template <typename V>
+	inline Vec<V> operator- (const Vec<V>& parLeft, const typename Vec<V>::scalar_type& parRight) {
+		return implem::binary_op_scalar_right(
+			parLeft,
+			parRight,
+			std::minus<typename Vec<V>::scalar_type>(),
+			bt::number_range<size_type, 0, VectorWrapperInfo<V>::dimensions>()
+		);
+	}
+	template <typename V>
+	inline Vec<V> operator* (const Vec<V>& parLeft, const typename Vec<V>::scalar_type& parRight) {
+		return implem::binary_op_scalar_right(
+			parLeft,
+			parRight,
+			std::multiplies<typename Vec<V>::scalar_type>(),
+			bt::number_range<size_type, 0, VectorWrapperInfo<V>::dimensions>()
+		);
+	}
+	template <typename V>
+	inline Vec<V> operator/ (const Vec<V>& parLeft, const typename Vec<V>::scalar_type& parRight) {
+		return implem::binary_op_scalar_right(
+			parLeft,
+			parRight,
+			std::divides<typename Vec<V>::scalar_type>(),
+			bt::number_range<size_type, 0, VectorWrapperInfo<V>::dimensions>()
+		);
+	}
+	template <typename V>
+	inline Vec<V> operator% (const Vec<V>& parLeft, const typename Vec<V>::scalar_type& parRight) {
+		return implem::binary_op_scalar_right(
+			parLeft,
+			parRight,
+			std::modulus<typename Vec<V>::scalar_type>(),
+			bt::number_range<size_type, 0, VectorWrapperInfo<V>::dimensions>()
+		);
+	}
+
+	template <typename V>
+	inline Vec<V> operator+ (const typename Vec<V>::scalar_type& parLeft, const Vec<V>& parRight) {
+		return implem::binary_op_scalar_left(
+			parLeft,
+			parRight,
+			std::plus<typename Vec<V>::scalar_type>(),
+			bt::number_range<size_type, 0, VectorWrapperInfo<V>::dimensions>()
+		);
+	}
+	template <typename V>
+	inline Vec<V> operator- (const typename Vec<V>::scalar_type& parLeft, const Vec<V>& parRight) {
+		return implem::binary_op_scalar_left(
+			parLeft,
+			parRight,
+			std::minus<typename Vec<V>::scalar_type>(),
+			bt::number_range<size_type, 0, VectorWrapperInfo<V>::dimensions>()
+		);
+	}
+	template <typename V>
+	inline Vec<V> operator* (const typename Vec<V>::scalar_type& parLeft, const Vec<V>& parRight) {
+		return implem::binary_op_scalar_left(
+			parLeft,
+			parRight,
+			std::multiplies<typename Vec<V>::scalar_type>(),
+			bt::number_range<size_type, 0, VectorWrapperInfo<V>::dimensions>()
+		);
+	}
+	template <typename V>
+	inline Vec<V> operator/ (const typename Vec<V>::scalar_type& parLeft, const Vec<V>& parRight) {
+		return implem::binary_op_scalar_left(
+			parLeft,
+			parRight,
+			std::divides<typename Vec<V>::scalar_type>(),
+			bt::number_range<size_type, 0, VectorWrapperInfo<V>::dimensions>()
+		);
+	}
+	template <typename V>
+	inline Vec<V> operator% (const typename Vec<V>::scalar_type& parLeft, const Vec<V>& parRight) {
+		return implem::binary_op_scalar_left(
+			parLeft,
+			parRight,
+			std::modulus<typename Vec<V>::scalar_type>(),
+			bt::number_range<size_type, 0, VectorWrapperInfo<V>::dimensions>()
 		);
 	}
 } //namespace vwr

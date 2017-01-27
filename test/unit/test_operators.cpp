@@ -82,3 +82,58 @@ TEST(vwr, bin_operators) {
 		EXPECT_EQ(res, a % b);
 	}
 }
+
+TEST(vwr, bin_operators_scalar) {
+	using namespace vwr;
+
+	{
+		ivec3 a(50, 100, 150);
+		ivec3 res(50 + 10, 100 + 10, 150 + 10);
+		EXPECT_EQ(res, a + 10);
+	}
+	{
+		ivec3 a(50, 100, 150);
+		ivec3 res(50 - 25, 100 - 25, 150 - 25);
+		EXPECT_EQ(res, a - 25);
+	}
+	{
+		ivec3 a(50, 100, 150);
+		ivec3 res(50 * 10, 100 * 10, 150 * 10);
+		EXPECT_EQ(res, a * 10);
+	}
+	{
+		ivec3 a(50, 100, 150);
+		ivec3 res(50 / 2, 100 / 2, 150 / 2);
+		EXPECT_EQ(res, a / 2);
+	}
+	{
+		ivec3 a(50, 100, 150);
+		ivec3 res(50 % 7, 100 % 7, 150 % 7);
+		EXPECT_EQ(res, a % 7);
+	}
+	{
+		ivec3 a(50, 100, 150);
+		ivec3 res(25 + 50, 25 + 100, 25 + 150);
+		EXPECT_EQ(res, 25 + a);
+	}
+	{
+		ivec3 a(50, 100, 150);
+		ivec3 res(25 - 50, 25 - 100, 25 - 150);
+		EXPECT_EQ(res, 25 - a);
+	}
+	{
+		ivec3 a(50, 100, 150);
+		ivec3 res(4 * 50, 4 * 100, 4 * 150);
+		EXPECT_EQ(res, 4 * a);
+	}
+	{
+		ivec3 a(50, 100, 150);
+		ivec3 res(1000 / 50, 1000 / 100, 1000 / 150);
+		EXPECT_EQ(res, 1000 / a);
+	}
+	{
+		ivec3 a(50, 100, 150);
+		ivec3 res(1000 % 50, 1000 % 100, 1000 % 150);
+		EXPECT_EQ(res, 1000 % a);
+	}
+}
