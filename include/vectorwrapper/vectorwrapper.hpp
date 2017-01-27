@@ -169,6 +169,8 @@ namespace vwr {
 		private:
 			template <size_type... I, typename... Args>
 			void assign_values (const bt::number_seq<size_type, I...>&, Args... parArgs);
+			template <typename Op, typename V2, size_type... I>
+			void assign_values_op (Op parOp, const bt::number_seq<size_type, I...>& parSeq, const VecBase<V2>& parOther);
 
 			vector_type m_wrapped;
 		};

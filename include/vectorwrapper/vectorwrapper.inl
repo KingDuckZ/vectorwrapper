@@ -56,6 +56,12 @@ namespace vwr {
 		}
 
 		template <typename V>
+		template <typename Op, typename V2, size_type... I>
+		void VecBase<V>::assign_values_op (Op parOp, const bt::number_seq<size_type, I...>& parSeq, const VecBase<V2>& parOther) {
+			this->assign_values(parSeq, parOp((*this)[I], parOther[I])...);
+		}
+
+		template <typename V>
 		auto VecBase<V>::operator[] (size_type parIndex) -> scalar_type& {
 			return VecGetter<V>::get_at(m_wrapped, parIndex);
 		}
@@ -95,36 +101,28 @@ namespace vwr {
 		template <typename V2>
 		VecBase<V>& VecBase<V>::operator+= (const VecBase<V2>& parOther) {
 			static_assert(static_cast<int>(VectorWrapperInfo<V>::dimensions) == static_cast<int>(VectorWrapperInfo<V2>::dimensions), "Dimensions mismatch");
-			for (size_type z = 0; z < VectorWrapperInfo<V>::dimensions; ++z) {
-				(*this)[z] += parOther[z];
-			}
+			this->assign_values_op(std::plus<scalar_type>(), bt::number_range<size_type, 0, VectorWrapperInfo<V>::dimensions>(), parOther);
 			return *this;
 		}
 		template <typename V>
 		template <typename V2>
 		VecBase<V>& VecBase<V>::operator-= (const VecBase<V2>& parOther) {
 			static_assert(static_cast<int>(VectorWrapperInfo<V>::dimensions) == static_cast<int>(VectorWrapperInfo<V2>::dimensions), "Dimensions mismatch");
-			for (size_type z = 0; z < VectorWrapperInfo<V>::dimensions; ++z) {
-				(*this)[z] -= parOther[z];
-			}
+			this->assign_values_op(std::minus<scalar_type>(), bt::number_range<size_type, 0, VectorWrapperInfo<V>::dimensions>(), parOther);
 			return *this;
 		}
 		template <typename V>
 		template <typename V2>
 		VecBase<V>& VecBase<V>::operator*= (const VecBase<V2>& parOther) {
 			static_assert(static_cast<int>(VectorWrapperInfo<V>::dimensions) == static_cast<int>(VectorWrapperInfo<V2>::dimensions), "Dimensions mismatch");
-			for (size_type z = 0; z < VectorWrapperInfo<V>::dimensions; ++z) {
-				(*this)[z] *= parOther[z];
-			}
+			this->assign_values_op(std::multiplies<scalar_type>(), bt::number_range<size_type, 0, VectorWrapperInfo<V>::dimensions>(), parOther);
 			return *this;
 		}
 		template <typename V>
 		template <typename V2>
 		VecBase<V>& VecBase<V>::operator/= (const VecBase<V2>& parOther) {
 			static_assert(static_cast<int>(VectorWrapperInfo<V>::dimensions) == static_cast<int>(VectorWrapperInfo<V2>::dimensions), "Dimensions mismatch");
-			for (int z = 0; z < VectorWrapperInfo<V>::dimensions; ++z) {
-				(*this)[z] /= parOther[z];
-			}
+			this->assign_values_op(std::divides<scalar_type>(), bt::number_range<size_type, 0, VectorWrapperInfo<V>::dimensions>(), parOther);
 			return *this;
 		}
 

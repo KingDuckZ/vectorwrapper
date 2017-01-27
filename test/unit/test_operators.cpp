@@ -137,3 +137,32 @@ TEST(vwr, bin_operators_scalar) {
 		EXPECT_EQ(res, 1000 % a);
 	}
 }
+
+TEST(vwr, bin_assign_op) {
+	using namespace vwr;
+
+	{
+		ivec3 a(2, 4, 8);
+		ivec3 res(2 + 20, 4 + 20, 8 + 20);
+		a += ivec3(20);
+		EXPECT_EQ(res, a);
+	}
+	{
+		ivec3 a(2, 4, 8);
+		ivec3 res(2 - 20, 4 - 20, 8 - 20);
+		a -= ivec3(20);
+		EXPECT_EQ(res, a);
+	}
+	{
+		ivec3 a(2, 4, 8);
+		ivec3 res(2 * 20, 4 * 20, 8 * 20);
+		a *= ivec3(20);
+		EXPECT_EQ(res, a);
+	}
+	{
+		ivec3 a(2, 4, 8);
+		ivec3 res(2 / 2, 4 / 2, 8 / 2);
+		a /= ivec3(2);
+		EXPECT_EQ(res, a);
+	}
+}
