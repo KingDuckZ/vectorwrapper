@@ -166,3 +166,32 @@ TEST(vwr, bin_assign_op) {
 		EXPECT_EQ(res, a);
 	}
 }
+
+TEST(vwr, bin_assign_op_scalar) {
+	using namespace vwr;
+
+	{
+		ivec3 a(2, 4, 8);
+		ivec3 res(2 + 20, 4 + 20, 8 + 20);
+		a += 20;
+		EXPECT_EQ(res, a);
+	}
+	{
+		ivec3 a(2, 4, 8);
+		ivec3 res(2 - 20, 4 - 20, 8 - 20);
+		a -= 20;
+		EXPECT_EQ(res, a);
+	}
+	{
+		ivec3 a(2, 4, 8);
+		ivec3 res(2 * 20, 4 * 20, 8 * 20);
+		a *= 20;
+		EXPECT_EQ(res, a);
+	}
+	{
+		ivec3 a(2, 4, 8);
+		ivec3 res(2 / 2, 4 / 2, 8 / 2);
+		a /= 2;
+		EXPECT_EQ(res, a);
+	}
+}

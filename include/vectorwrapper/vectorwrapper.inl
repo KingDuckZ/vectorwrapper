@@ -62,6 +62,12 @@ namespace vwr {
 		}
 
 		template <typename V>
+		template <typename Op, size_type... I>
+		void VecBase<V>::assign_values_op_scalar (Op parOp, const bt::number_seq<size_type, I...>& parSeq, const scalar_type& parOther) {
+			this->assign_values(parSeq, parOp((*this)[I], parOther)...);
+		}
+
+		template <typename V>
 		auto VecBase<V>::operator[] (size_type parIndex) -> scalar_type& {
 			return VecGetter<V>::get_at(m_wrapped, parIndex);
 		}
@@ -123,6 +129,27 @@ namespace vwr {
 		VecBase<V>& VecBase<V>::operator/= (const VecBase<V2>& parOther) {
 			static_assert(static_cast<int>(VectorWrapperInfo<V>::dimensions) == static_cast<int>(VectorWrapperInfo<V2>::dimensions), "Dimensions mismatch");
 			this->assign_values_op(std::divides<scalar_type>(), bt::number_range<size_type, 0, VectorWrapperInfo<V>::dimensions>(), parOther);
+			return *this;
+		}
+
+		template <typename V>
+		VecBase<V>& VecBase<V>::operator+= (const scalar_type& parOther) {
+			this->assign_values_op_scalar(std::plus<scalar_type>(), bt::number_range<size_type, 0, VectorWrapperInfo<V>::dimensions>(), parOther);
+			return *this;
+		}
+		template <typename V>
+		VecBase<V>& VecBase<V>::operator-= (const scalar_type& parOther) {
+			this->assign_values_op_scalar(std::minus<scalar_type>(), bt::number_range<size_type, 0, VectorWrapperInfo<V>::dimensions>(), parOther);
+			return *this;
+		}
+		template <typename V>
+		VecBase<V>& VecBase<V>::operator*= (const scalar_type& parOther) {
+			this->assign_values_op_scalar(std::multiplies<scalar_type>(), bt::number_range<size_type, 0, VectorWrapperInfo<V>::dimensions>(), parOther);
+			return *this;
+		}
+		template <typename V>
+		VecBase<V>& VecBase<V>::operator/= (const scalar_type& parOther) {
+			this->assign_values_op_scalar(std::divides<scalar_type>(), bt::number_range<size_type, 0, VectorWrapperInfo<V>::dimensions>(), parOther);
 			return *this;
 		}
 
