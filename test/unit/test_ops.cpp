@@ -23,7 +23,7 @@ namespace vwr {
 
 typedef vwr::Vec<UnorderedVector> uvec3i;
 
-TEST(vwr, ops) {
+TEST(vwr, dot) {
 	using namespace vwr;
 
 	ivec3 a(1);
@@ -42,4 +42,36 @@ TEST(vwr, ops) {
 	EXPECT_EQ(9, c.z());
 	EXPECT_EQ(7*5+2*2+9*8, dot(a, c));
 	EXPECT_EQ(7*6+2*9+9*3, dot(b, c));
+}
+
+TEST(vwr, cross2D) {
+	using namespace vwr;
+
+	ivec2 a(53, 97);
+	ivec2 b(71, -30);
+
+	EXPECT_EQ(-8477, cross(a, b));
+
+	a /= 4;
+	b /= -2;
+	EXPECT_EQ(1035, cross(a, b));
+}
+
+TEST(vwr, cross3D) {
+	using namespace vwr;
+
+	ivec3 a(5, 7, 13);
+	ivec3 b(17, 19, 23);
+
+	ivec3 res(-86, 106, -24);
+	EXPECT_EQ(res, cross(a, b));
+
+	a.x() *= 10;
+	a.y() *= -8;
+	a.z() *= 37;
+	b *= -99;
+	res.x() = 1032273;
+	res.y() = -695673;
+	res.z() = -188298;
+	EXPECT_EQ(res, cross(a, b));
 }

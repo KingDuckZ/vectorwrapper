@@ -26,6 +26,11 @@ namespace vwr {
 	template <typename V1, typename V2, size_type S>
 	typename std::common_type<typename Vec<V1>::scalar_type, typename Vec<V2>::scalar_type>::type dot ( const Vec<V1, S>& parLeft, const Vec<V2, S>& parRight );
 
+	template <typename V1, typename V2>
+	typename std::common_type<typename Vec<V1>::scalar_type, typename Vec<V2>::scalar_type>::type cross ( const Vec<V1, 2>& parLeft, const Vec<V2, 2>& parRight );
+	template <typename V1, typename V2>
+	Vec<typename std::common_type<V1, V2>::type> cross ( const Vec<V1, 3>& parLeft, const Vec<V2, 3>& parRight );
+
 	template <typename V1, typename V2, size_type S>
 	inline typename std::common_type<typename Vec<V1>::scalar_type, typename Vec<V2>::scalar_type>::type dot (const Vec<V1, S>& parLeft, const Vec<V2, S>& parRight) {
 		auto retval = parLeft.x() * parRight.x();
@@ -33,6 +38,19 @@ namespace vwr {
 			retval += parLeft[z] * parRight[z];
 		}
 		return retval;
+	}
+
+	template <typename V1, typename V2>
+	inline typename std::common_type<typename Vec<V1>::scalar_type, typename Vec<V2>::scalar_type>::type cross (const Vec<V1, 2>& parLeft, const Vec<V2, 2>& parRight) {
+		return parLeft.x() * parRight.y() - parLeft.y() * parRight.x();
+	}
+	template <typename V1, typename V2>
+	inline Vec<typename std::common_type<V1, V2>::type> cross (const Vec<V1, 3>& parLeft, const Vec<V2, 3>& parRight) {
+		return Vec<typename std::common_type<V1, V2>::type>(
+			parLeft.y() * parRight.z() - parLeft.z() * parRight.y(),
+			parLeft.z() * parRight.x() - parLeft.x() * parRight.z(),
+			parLeft.x() * parRight.y() - parLeft.y() * parRight.x()
+		);
 	}
 } //namespace vwr
 
