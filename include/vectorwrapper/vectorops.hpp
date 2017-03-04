@@ -17,8 +17,8 @@
 #ifndef id8949C80C36BA42CABC49EA4C1DB54BC7
 #define id8949C80C36BA42CABC49EA4C1DB54BC7
 
-#include "vectorwrapper/vectorwrapper.hpp"
-#include "vectorwrapper/size_type.hpp"
+#include "vectorwrapper-1.0/vectorwrapper.hpp"
+#include "vectorwrapper-1.0/size_type.hpp"
 #include <type_traits>
 #include <cstddef>
 

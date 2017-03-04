@@ -17,9 +17,9 @@
 #ifndef id1F562E68E5184552A7E8C9270B016692
 #define id1F562E68E5184552A7E8C9270B016692
 
-#include "vectorwrapper/has_method.hpp"
-#include "vectorwrapper/sequence_bt.hpp"
-#include "vectorwrapper/size_type.hpp"
+#include "vectorwrapper-1.0/has_method.hpp"
+#include "vectorwrapper-1.0/sequence_bt.hpp"
+#include "vectorwrapper-1.0/size_type.hpp"
 #include <ciso646>
 #include <type_traits>
 #include <array>
@@ -493,6 +493,6 @@ namespace vwr {
 } //namespace VWR_OUTER_NAMESPACE
 #endif
 
-#include "vectorwrapper/vectorwrapper.inl"
+#include "vectorwrapper-1.0/vectorwrapper.inl"
 
 #endif
