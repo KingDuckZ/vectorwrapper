@@ -14,6 +14,10 @@
  * limitations under the License.
  */
 
+#if defined VWR_OUTER_NAMESPACE
+namespace VWR_OUTER_NAMESPACE {
+#endif
+
 namespace vwr {
 	namespace implem {
 		template <typename T, bool=HasCastIgnoreTrailingPropertiesEnum<VectorWrapperInfo<T>>::value> struct IsCastIgnoreTrailingPropertiesSet;
@@ -611,3 +615,7 @@ namespace vwr {
 		);
 	}
 } //namespace vwr
+
+#if defined VWR_OUTER_NAMESPACE
+} //namespace VWR_OUTER_NAMESPACE
+#endif

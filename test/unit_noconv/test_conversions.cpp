@@ -3,7 +3,7 @@
 #include <gtest/gtest.h>
 
 TEST(vwr, vector_cast) {
-	using namespace vwr;
+	using namespace vwr_outer_ns::vwr;
 
 	{
 		float2 v1(1.0f, 2.0f);
@@ -39,7 +39,7 @@ TEST(vwr, vector_cast) {
 }
 
 TEST(vwr, promotion_static_cast) {
-	using namespace vwr;
+	using namespace vwr_outer_ns::vwr;
 
 	{
 		short2 v1(100, 200);

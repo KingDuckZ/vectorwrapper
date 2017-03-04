@@ -22,3 +22,7 @@ add_test(
 	WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
 	COMMAND ${PROJECT_NAME}
 )
+
+target_compile_definitions(${PROJECT_NAME}
+	PRIVATE VWR_OUTER_NAMESPACE=vwr_outer_ns
+)

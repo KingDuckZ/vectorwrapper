@@ -15,6 +15,7 @@
         } \
     }
 
+namespace vwr_outer_ns {
 namespace vwr {
 	SPECIALIZE_ARRAY_VECTOR(float, 2);
 	SPECIALIZE_ARRAY_VECTOR(float, 3);
@@ -26,6 +27,7 @@ namespace vwr {
 	typedef Vec<std::array<short int, 2>> short2;
 	typedef Vec<std::array<short int, 3>> short3;
 } //namespace vwr
+} //namespace vwr_outer_ns
 
 #undef SPECIALIZE_ARRAY_VECTOR
 

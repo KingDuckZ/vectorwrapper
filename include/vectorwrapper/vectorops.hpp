@@ -22,6 +22,10 @@
 #include <type_traits>
 #include <cstddef>
 
+#if defined VWR_OUTER_NAMESPACE
+namespace VWR_OUTER_NAMESPACE {
+#endif
+
 namespace vwr {
 	template <typename V1, typename V2, size_type S>
 	typename std::common_type<typename Vec<V1>::scalar_type, typename Vec<V2>::scalar_type>::type dot ( const Vec<V1, S>& parLeft, const Vec<V2, S>& parRight );
@@ -53,5 +57,9 @@ namespace vwr {
 		);
 	}
 } //namespace vwr
+
+#if defined VWR_OUTER_NAMESPACE
+} //namespace VWR_OUTER_NAMESPACE
+#endif
 
 #endif

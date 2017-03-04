@@ -25,6 +25,10 @@
 #include <array>
 #include <cassert>
 
+#if defined VWR_OUTER_NAMESPACE
+namespace VWR_OUTER_NAMESPACE {
+#endif
+
 namespace vwr {
 	template <typename V>
 	struct VectorWrapperInfo;
@@ -484,6 +488,10 @@ namespace vwr {
 	template <typename V>
 	Vec<V> operator% ( const typename Vec<V>::scalar_type& parLeft, const Vec<V>& parRight );
 } //namespace vwr
+
+#if defined VWR_OUTER_NAMESPACE
+} //namespace VWR_OUTER_NAMESPACE
+#endif
 
 #include "vectorwrapper/vectorwrapper.inl"
 

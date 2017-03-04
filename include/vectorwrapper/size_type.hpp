@@ -22,6 +22,10 @@
 #	include <cstdint>
 #endif
 
+#if defined VWR_OUTER_NAMESPACE
+namespace VWR_OUTER_NAMESPACE {
+#endif
+
 namespace vwr {
 #if !defined(VWR_SIZE_TYPE)
 	typedef std::size_t size_type;
@@ -29,5 +33,9 @@ namespace vwr {
 	typedef VWR_SIZE_TYPE size_type;
 #endif
 } //namespace vwr
+
+#if defined VWR_OUTER_NAMESPACE
+} //namespace VWR_OUTER_NAMESPACE
+#endif
 
 #endif

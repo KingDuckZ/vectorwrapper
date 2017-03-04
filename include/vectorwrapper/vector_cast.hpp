@@ -21,6 +21,10 @@
 #include "vectorwrapper/size_type.hpp"
 #include "vectorwrapper/vectorwrapper.hpp"
 
+#if defined VWR_OUTER_NAMESPACE
+namespace VWR_OUTER_NAMESPACE {
+#endif
+
 namespace vwr {
 	namespace implem {
 		template <typename TO, typename FROM, size_type... I>
@@ -42,5 +46,9 @@ namespace vwr {
 		return implem::vector_cast(parVec, to, bt::number_range<size_type, 0, Vec<FROM>::dimensions>());
 	}
 } //namespace vwr
+
+#if defined VWR_OUTER_NAMESPACE
+} //namespace VWR_OUTER_NAMESPACE
+#endif
 
 #endif

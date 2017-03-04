@@ -19,6 +19,10 @@
 
 #include <cstddef>
 
+#if defined VWR_OUTER_NAMESPACE
+namespace VWR_OUTER_NAMESPACE {
+#endif
+
 namespace vwr {
 	namespace bt {
 		template <typename T, T... I>
@@ -49,5 +53,9 @@ namespace vwr {
 		using index_range = number_range<std::size_t, MIN, MAX>;
 	} //namespace bt
 } //namespace vwr
+
+#if defined VWR_OUTER_NAMESPACE
+} //namespace VWR_OUTER_NAMESPACE
+#endif
 
 #endif
