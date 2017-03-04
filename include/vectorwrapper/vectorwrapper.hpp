@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 
-#ifndef id1F562E68E5184552A7E8C9270B016692
-#define id1F562E68E5184552A7E8C9270B016692
+#pragma once
 
 #include "vectorwrapper-1.0/has_method.hpp"
 #include "vectorwrapper-1.0/sequence_bt.hpp"
@@ -494,5 +493,3 @@ namespace vwr {
 #endif
 
 #include "vectorwrapper-1.0/vectorwrapper.inl"
-
-#endif

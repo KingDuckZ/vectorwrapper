@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 
-#ifndef idFBC29C5127784D35BE62F7BAC16E3687
-#define idFBC29C5127784D35BE62F7BAC16E3687
+#pragma once
 
 #define define_has_method(method_name,pretty_name) \
 	template <typename T> \
@@ -50,5 +49,3 @@
 	public:\
 		enum { value = sizeof(has_enum<T>(nullptr)) == sizeof(TrueType) }; \
 	}
-
-#endif

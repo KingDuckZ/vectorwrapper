@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 
-#ifndef id4FAEF395B9ED47CB9D6B50B54C9A289A
-#define id4FAEF395B9ED47CB9D6B50B54C9A289A
+#pragma once
 
 #include <cstddef>
 
@@ -56,6 +55,4 @@ namespace vwr {
 
 #if defined VWR_OUTER_NAMESPACE
 } //namespace VWR_OUTER_NAMESPACE
-#endif
-
 #endif

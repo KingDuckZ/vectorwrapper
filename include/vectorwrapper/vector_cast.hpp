@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 
-#ifndef idE24EF7737A7F4882B2BF254F0A3EEC34
-#define idE24EF7737A7F4882B2BF254F0A3EEC34
+#pragma once
 
 #include "vectorwrapper-1.0/sequence_bt.hpp"
 #include "vectorwrapper-1.0/size_type.hpp"
@@ -49,6 +48,4 @@ namespace vwr {
 
 #if defined VWR_OUTER_NAMESPACE
 } //namespace VWR_OUTER_NAMESPACE
-#endif
-
 #endif
