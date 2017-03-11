@@ -53,3 +53,12 @@ TEST(vwr, conversion) {
 		test_tvec3(p3.cast<tvec3>(), p3.x(), p3.y(), p3.z());
 	}
 }
+
+TEST(vwr, cast) {
+	using namespace vwr;
+
+	svec2 s(10.0f);
+	ivec2 i = static_cast<ivec2>(s);
+	EXPECT_EQ(i.x(), 10);
+	EXPECT_EQ(i.y(), 10);
+}

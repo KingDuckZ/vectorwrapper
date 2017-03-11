@@ -176,7 +176,11 @@ namespace vwr {
 		template <typename V1, typename V2, size_type D>
 		inline Vec<V1>& assign (Vec<V1, D>& parLeft, const Vec<V2, D>& parRight) {
 			for (size_type z = 0; z < D; ++z) {
+#if defined(VWR_WITH_UNCASTED_ASSIGNMENT)
 				parLeft[z] = parRight[z];
+#else
+				parLeft[z] = static_cast<typename Vec<V1>::scalar_type>(parRight[z]);
+#endif
 			}
 			return parLeft;
 		}
