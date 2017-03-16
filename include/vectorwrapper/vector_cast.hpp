@@ -16,9 +16,9 @@
 
 #pragma once
 
-#include "vectorwrapper-1.0/sequence_bt.hpp"
-#include "vectorwrapper-1.0/size_type.hpp"
-#include "vectorwrapper-1.0/vectorwrapper.hpp"
+#include "sequence_bt.hpp"
+#include "size_type.hpp"
+#include "vectorwrapper.hpp"
 
 #if defined VWR_OUTER_NAMESPACE
 namespace VWR_OUTER_NAMESPACE {

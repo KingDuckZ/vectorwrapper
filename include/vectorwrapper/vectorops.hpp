@@ -16,8 +16,8 @@
 
 #pragma once
 
-#include "vectorwrapper-1.0/vectorwrapper.hpp"
-#include "vectorwrapper-1.0/size_type.hpp"
+#include "vectorwrapper.hpp"
+#include "size_type.hpp"
 #include <type_traits>
 #include <cstddef>
 

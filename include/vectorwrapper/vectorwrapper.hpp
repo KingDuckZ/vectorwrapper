@@ -16,9 +16,9 @@
 
 #pragma once
 
-#include "vectorwrapper-1.0/has_method.hpp"
-#include "vectorwrapper-1.0/sequence_bt.hpp"
-#include "vectorwrapper-1.0/size_type.hpp"
+#include "has_method.hpp"
+#include "sequence_bt.hpp"
+#include "size_type.hpp"
 #include <ciso646>
 #include <type_traits>
 #include <array>
@@ -492,4 +492,4 @@ namespace vwr {
 } //namespace VWR_OUTER_NAMESPACE
 #endif
 
-#include "vectorwrapper-1.0/vectorwrapper.inl"
+#include "vectorwrapper.inl"
