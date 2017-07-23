@@ -19,8 +19,8 @@ import gdb.printing
 #This pretty-printer has been written for vectorwrapper + std::array.
 #You will have to customize it if your wrapped type is different.
 
-class VectorWrapperPrinter(object):
-    "Print values in a VectorWrapper"
+class VectorWrapperStdArrPrinter(object):
+    "Print values in a VectorWrapper<std::array>"
 
     class _iterator(object):
         def __init__(self, start, size):
@@ -63,7 +63,7 @@ class VectorWrapperPrinter(object):
 def build_pretty_printer():
     pp = gdb.printing.RegexpCollectionPrettyPrinter(__name__)
     #add your namespace before 'vwr' if you're using a custom one
-    pp.add_printer('vwr', '^vwr::Vec<.+$', VectorWrapperPrinter)
+    pp.add_printer('vwr', '^vwr::Vec<std::array.+$', VectorWrapperStdArrPrinter)
     return pp
 
 gdb.printing.register_pretty_printer(
