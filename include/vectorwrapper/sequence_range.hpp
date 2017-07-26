@@ -111,6 +111,18 @@ namespace vwr {
 	};
 
 	namespace implem {
+		template <size_type SEEK, size_type IDX, size_type... I>
+		struct get_at_index;
+		template <size_type SEEK, size_type IDX, size_type I>
+		struct get_at_index<SEEK, IDX, I> {
+			static_assert(SEEK == IDX, "Index out of range");
+			static constexpr size_type value = I;
+		};
+		template <size_type SEEK, size_type IDX, size_type L, size_type... I>
+		struct get_at_index<SEEK, IDX, L, I...> {
+			static constexpr size_type value = (IDX == SEEK ? L : get_at_index<SEEK, IDX + 1, I...>::value);
+		};
+
 		template <typename T, typename OP, typename CMP, typename U>
 		struct make_sequence_helper;
 
@@ -119,10 +131,11 @@ namespace vwr {
 			typedef sequence_range<Vec<T>, OP, CMP, I...> type;
 		};
 
-		template <typename V>
+		template <typename V, size_type... I>
 		inline V make_end_vector (V parFrom, const V& parUpper) {
-			auto& last = parFrom[V::dimensions - 1];
-			const auto& upper_last = parUpper[V::dimensions - 1];
+			constexpr const size_type last_idx = get_at_index<sizeof...(I) - 1, 0, I...>::value;
+			auto& last = parFrom[last_idx];
+			const auto& upper_last = parUpper[last_idx];
 			last = upper_last;
 			return parFrom;
 		}
@@ -181,7 +194,7 @@ namespace vwr {
 	sequence_range<V, OP, CMP, I...>::sequence_range (const V& parFrom, const V& parUpper) :
 		m_from(parFrom),
 		m_upper(parUpper),
-		m_end(implem::make_end_vector<V>(parFrom, parUpper))
+		m_end(implem::make_end_vector<V, I...>(parFrom, parUpper))
 	{
 	}
 
