@@ -7,7 +7,7 @@ add_executable(${PROJECT_NAME}
 	example.cpp
 	test_get_at.cpp
 	test_operators.cpp
-	test_vector_iterator.cpp
+	test_sequence_range.cpp
 )
 
 target_link_libraries(${PROJECT_NAME}

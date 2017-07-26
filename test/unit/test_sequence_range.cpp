@@ -15,7 +15,7 @@
  */
 
 #include "sample_vectors.hpp"
-#include "vectorwrapper/vector_iterator.hpp"
+#include "vectorwrapper/sequence_range.hpp"
 #include <gtest/gtest.h>
 #include <functional>
 #include <array>
@@ -26,8 +26,9 @@ TEST(vwr, vector_iterator) {
 
 	ivec3 from(100, 200, 300);
 	ivec3 to(102, 203, 304);
-	auto it = make_vector_iterator<op::inc<int64_t>, std::less<int64_t>>(from, to, bt::number_range<size_type, 0, 3>());
-	auto it_end = make_vector_iterator_end<op::inc<int64_t>, std::less<int64_t>>(from, to, bt::number_range<size_type, 0, 3>());
+	auto seq = increasing_sequence_range<ivec3>(from, to);
+	auto it = seq.begin();
+	auto it_end = seq.end();
 
 	std::array<ivec3, 24> expected{
 		ivec3(100, 200, 300),
