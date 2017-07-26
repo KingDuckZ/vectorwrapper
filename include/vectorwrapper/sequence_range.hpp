@@ -41,9 +41,42 @@ namespace vwr {
 		};
 	} //namespace op
 
+	namespace implem {
+		//sets value to the index of the first I >= MAX or to sizeof...(I) if
+		//no such value is found
+		template <size_type MAX, size_type IDX, size_type... I>
+		struct find_ge_than_max;
+
+		template <size_type MAX, size_type IDX, size_type I>
+		struct find_ge_than_max<MAX, IDX, I> {
+			static constexpr size_type value =
+				IDX + (I >= MAX ? 0 : 1);
+		};
+		template <size_type MAX, size_type IDX, size_type L, size_type... I>
+		struct find_ge_than_max<MAX, IDX, L, I...> {
+			static constexpr size_type value =
+				(L >= MAX ? IDX : find_ge_than_max<MAX, IDX + 1, I...>::value);
+		};
+
+		//helper to identify the invalid index in the build error messages
+		template <size_type INVALID_INDEX, bool INVALID>
+		struct is_invalid_index {
+			static_assert(not INVALID,
+				"Invalid index specified, indices must all be >= 0 and <= dimensions"
+			);
+			enum {
+				value = 0
+			};
+		};
+	} //namespace implem
+
 	template <typename V, typename OP, typename CMP, size_type... I>
 	class sequence_range_iterator : OP, CMP {
-		//static_assert(VectorWrapperInfo<V>::dimensions >= sizeof...(I), "Start index out of valid range");
+		static_assert(not implem::is_invalid_index<
+			implem::find_ge_than_max<V::dimensions, 0, I...>::value,
+			sizeof...(I) != implem::find_ge_than_max<V::dimensions, 0, I...>::value
+		>::value, "");
+		static_assert(sizeof...(I) > 0, "At least one index must be specified");
 	public:
 		sequence_range_iterator (const V& parFrom, const V& parUpper);
 		sequence_range_iterator (const V& parCurrent, const V& parFrom, const V& parUpper);
