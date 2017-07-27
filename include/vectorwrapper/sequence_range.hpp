@@ -148,8 +148,7 @@ namespace vwr {
 
 	template <typename V, typename OP, typename CMP, size_type... I>
 	sequence_range_iterator<V, OP, CMP, I...>::sequence_range_iterator (const sequence_range_type& parSeq) :
-		m_current(parSeq.from()),
-		m_seq(parSeq)
+		sequence_range_iterator(parSeq.from(), parSeq)
 	{
 	}
 
