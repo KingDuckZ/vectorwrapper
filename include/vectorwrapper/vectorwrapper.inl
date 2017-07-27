@@ -83,7 +83,7 @@ namespace vwr {
 
 		template <typename V>
 		template <typename V2>
-		const typename std::enable_if<is_vec<V2>::value, V2>::type& VecBase<V>::cast() const {
+		auto VecBase<V>::cast() const -> const typename std::enable_if<is_vec<V2>::value and directly_convertible<V, V2>::value, V2>::type& {
 			static_assert(sizeof(V2) <= sizeof(VecBase<V>) - min_offset<V>::value, "V2 must fit in V starting from the first coordinate");
 			static_assert(std::is_standard_layout<V2>::value, "V2 must be a standard layout type");
 			static_assert(min_offset<typename is_vec<V2>::vector_type>::value == 0, "V2 must not have any properties before the first coordinate");
@@ -103,7 +103,32 @@ namespace vwr {
 
 		template <typename V>
 		template <typename V2>
-		typename std::enable_if<is_vec<V2>::value, V2>::type& VecBase<V>::cast() {
+		auto VecBase<V>::cast() -> typename std::enable_if<is_vec<V2>::value and directly_convertible<V, V2>::value, V2>::type& {
+			return const_cast<V2&>(const_cast<const VecBase<V>*>(this)->cast<V2>());
+		}
+
+		template <typename V>
+		template <typename V2>
+		auto VecBase<V>::cast() const -> const typename std::enable_if<is_vec<V2>::value and not directly_convertible<V, V2>::value, V2>::type& {
+			static_assert(std::is_standard_layout<V2>::value, "V2 must be a standard layout type");
+			typedef typename is_vec<V2>::vector_type v2_type;
+			static_assert(std::is_base_of<is_castable_to<typename VectorWrapperInfo<v2_type>::vector_type>, VectorWrapperInfo<V>>::value, "Casting for this type has to be explicitly enabled");
+
+			//Assert that V2 won't stomp on part of V's data, unless the user
+			//has explicitly said he doesn't care.
+			static_assert((sizeof(typename VectorWrapperInfo<typename is_vec<V2>::vector_type>::scalar_type) * VectorWrapperInfo<typename is_vec<V2>::vector_type>::dimensions == sizeof(V2)) or
+				IsCastIgnoreTrailingPropertiesSet<typename is_vec<V2>::vector_type>::value,
+				"V2 must not have any properties past the last coordinate");
+			static_assert(alignof(typename VectorWrapperInfo<V>::scalar_type) == alignof(V2), "Casting to V2 would give you a misaligned variable");
+
+			return *reinterpret_cast<const V2*>(
+				reinterpret_cast<const char*>(&(*this)[0])
+			);
+		}
+
+		template <typename V>
+		template <typename V2>
+		auto VecBase<V>::cast() -> typename std::enable_if<is_vec<V2>::value and not directly_convertible<V, V2>::value, V2>::type& {
 			return const_cast<V2&>(const_cast<const VecBase<V>*>(this)->cast<V2>());
 		}
 

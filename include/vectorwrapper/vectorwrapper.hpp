@@ -134,6 +134,22 @@ namespace vwr {
 			enum { value = true };
 		};
 
+		template <typename V> struct get_wrapped_ifn {
+			typedef V type;
+		};
+		template <typename T> struct get_wrapped_ifn<Vec<T>> {
+			typedef T type;
+		};
+
+		template <typename V1, typename V2>
+		struct directly_convertible {
+			enum {
+				value =
+					not HasGetAtMethod<VectorWrapperInfo<typename get_wrapped_ifn<V1>::type>>::value and
+					not HasGetAtMethod<VectorWrapperInfo<typename get_wrapped_ifn<V2>::type>>::value
+			};
+		};
+
 		template <typename V>
 		class VecBase {
 			friend Vec<V>& assign_same_type<V> ( Vec<V>& parLeft, const Vec<V>& parRight );
@@ -160,9 +176,14 @@ namespace vwr {
 			const vector_type& data ( void ) const { return m_wrapped; }
 
 			template <typename V2>
-			const typename std::enable_if<is_vec<V2>::value, V2>::type& cast ( void ) const;
+			const typename std::enable_if<is_vec<V2>::value and directly_convertible<V, V2>::value, V2>::type& cast ( void ) const;
 			template <typename V2>
-			typename std::enable_if<is_vec<V2>::value, V2>::type& cast ( void );
+			typename std::enable_if<is_vec<V2>::value and directly_convertible<V, V2>::value, V2>::type& cast ( void );
+
+			template <typename V2>
+			const typename std::enable_if<is_vec<V2>::value and not directly_convertible<V, V2>::value, V2>::type& cast ( void ) const;
+			template <typename V2>
+			typename std::enable_if<is_vec<V2>::value and not directly_convertible<V, V2>::value, V2>::type& cast ( void );
 
 			template <typename V2> VecBase& operator+= ( const VecBase<V2>& parOther );
 			template <typename V2> VecBase& operator-= ( const VecBase<V2>& parOther );
@@ -329,6 +350,8 @@ namespace vwr {
 		template <typename V1, typename V2, typename Op, size_type... I>
 		Vec<typename std::common_type<V1, V2>::type> binary_op ( const Vec<V1>& parLeft, const Vec<V2>& parRight, Op parOp, const Vec<typename std::common_type<V1, V2>::type>& parLastVal, bt::number_seq<size_type, I...> );
 	} //namespace implem
+
+	template <typename V> struct is_castable_to { };
 
 	template <typename V, size_type S>
 	class Vec : public implem::VecBase<V> {
