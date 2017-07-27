@@ -71,7 +71,7 @@ TEST(vwr, vector_iterator) {
 	}
 
 	{
-		using dec_sequence_range = sequence_range<ivec3, op::dec<int64_t>, std::greater<int64_t>, 0, 1, 2>;
+		using dec_sequence_range = sequence_range<ivec3, std::minus<int64_t>, std::greater<int64_t>, 0, 1, 2>;
 		std::vector<ivec3> results;
 		for (auto& itm : dec_sequence_range(to, from)) {
 			results.push_back(itm);

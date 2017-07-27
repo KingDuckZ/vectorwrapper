@@ -29,18 +29,6 @@ namespace VWR_OUTER_NAMESPACE {
 #endif
 
 namespace vwr {
-	namespace op {
-		template <typename T, T Inc=1>
-		struct inc {
-			T operator() (T parVal) const { return parVal + Inc; }
-		};
-
-		template <typename T, T Inc=1>
-		struct dec {
-			T operator() (T parVal) const { return parVal - Inc; }
-		};
-	} //namespace op
-
 	namespace implem {
 		//sets value to the index of the first I >= MAX or to sizeof...(I) if
 		//no such value is found
@@ -71,15 +59,20 @@ namespace vwr {
 	} //namespace implem
 
 	template <typename V, typename OP, typename CMP, size_type... I>
+	class sequence_range;
+
+	template <typename V, typename OP, typename CMP, size_type... I>
 	class sequence_range_iterator : OP, CMP {
 		static_assert(not implem::is_invalid_index<
 			implem::find_ge_than_max<V::dimensions, 0, I...>::value,
 			sizeof...(I) != implem::find_ge_than_max<V::dimensions, 0, I...>::value
 		>::value, "");
 		static_assert(sizeof...(I) > 0, "At least one index must be specified");
+
+		typedef sequence_range<V, OP, CMP, I...> sequence_range_type;
 	public:
-		sequence_range_iterator (const V& parFrom, const V& parUpper);
-		sequence_range_iterator (const V& parCurrent, const V& parFrom, const V& parUpper);
+		explicit sequence_range_iterator (const sequence_range_type& parSeq);
+		sequence_range_iterator (const V& parCurrent, const sequence_range_type& parSeq);
 		~sequence_range_iterator() = default;
 
 		sequence_range_iterator& operator++ ();
@@ -89,8 +82,7 @@ namespace vwr {
 
 	private:
 		V m_current;
-		const V& m_from;
-		const V& m_upper;
+		const sequence_range_type& m_seq;
 	};
 
 	template <typename V, typename OP, typename CMP, size_type... I>
@@ -99,15 +91,28 @@ namespace vwr {
 		typedef sequence_range_iterator<V, OP, CMP, I...> const_iterator;
 
 		sequence_range (const V& parFrom, const V& parUpper);
+		sequence_range (const V& parFrom, const V& parUpper, const V& parStep);
 		const_iterator cbegin() const;
 		const_iterator cend() const;
 		const_iterator begin() const { return cbegin(); }
 		const_iterator end() const { return cend(); }
+		[[gnu::always_inline]] const V& from() const { return m_from; }
+		[[gnu::always_inline]] const V& upper() const { return m_upper; }
+		[[gnu::always_inline]] const V& step() const { return m_step; }
 
 	private:
 		V m_from;
 		V m_upper;
 		V m_end;
+		V m_step;
+	};
+
+	template <typename V, typename OP, typename CMP, size_type... I>
+	class stepping_sequence_range : public sequence_range<V, OP, CMP, I...> {
+	public:
+		stepping_sequence_range (const V& parFrom, const V& parUpper, const V& parStep);
+	private:
+		V m_step;
 	};
 
 	namespace implem {
@@ -142,18 +147,16 @@ namespace vwr {
 	} //namespace implem
 
 	template <typename V, typename OP, typename CMP, size_type... I>
-	sequence_range_iterator<V, OP, CMP, I...>::sequence_range_iterator (const V& parFrom, const V& parUpper) :
-		m_current(parFrom),
-		m_from(parFrom),
-		m_upper(parUpper)
+	sequence_range_iterator<V, OP, CMP, I...>::sequence_range_iterator (const sequence_range_type& parSeq) :
+		m_current(parSeq.from()),
+		m_seq(parSeq)
 	{
 	}
 
 	template <typename V, typename OP, typename CMP, size_type... I>
-	sequence_range_iterator<V, OP, CMP, I...>::sequence_range_iterator (const V& parCurrent, const V& parFrom, const V& parUpper) :
+	sequence_range_iterator<V, OP, CMP, I...>::sequence_range_iterator (const V& parCurrent, const sequence_range_type& parSeq) :
 		m_current(parCurrent),
-		m_from(parFrom),
-		m_upper(parUpper)
+		m_seq(parSeq)
 	{
 	}
 
@@ -165,14 +168,14 @@ namespace vwr {
 
 		std::array<size_type, sizeof...(I)> lst {I...};
 		size_type index = lst[0];
-		m_current[index] = advance_op(m_current[index]);
-		if (1 < sizeof...(I) and not cmp_op(m_current[index], m_upper[index])) {
+		m_current[index] = advance_op(m_current[index], m_seq.step()[index]);
+		if (1 < sizeof...(I) and not cmp_op(m_current[index], m_seq.upper()[index])) {
 			size_type count = 1;
 			do {
-				m_current[index] = m_from[index];
+				m_current[index] = m_seq.from()[index];
 				index = lst[count++];
-				m_current[index] = advance_op(m_current[index]);
-			} while (count < sizeof...(I) and not cmp_op(m_current[index], m_upper[index]));
+				m_current[index] = advance_op(m_current[index], m_seq.step()[index]);
+			} while (count < sizeof...(I) and not cmp_op(m_current[index], m_seq.upper()[index]));
 		}
 
 		return *this;
@@ -180,13 +183,13 @@ namespace vwr {
 
 	template <typename V, typename OP, typename CMP, size_type... I>
 	bool sequence_range_iterator<V, OP, CMP, I...>::operator!= (const sequence_range_iterator& parOther) const {
-		assert(&m_from == &parOther.m_from and &m_upper == &parOther.m_upper);
+		assert(&m_seq.from() == &parOther.m_seq.from() and &m_seq.upper() == &parOther.m_seq.upper());
 		return m_current != parOther.m_current;
 	}
 
 	template <typename V, typename OP, typename CMP, size_type... I>
 	bool sequence_range_iterator<V, OP, CMP, I...>::operator== (const sequence_range_iterator& parOther) const {
-		assert(&m_from == &parOther.m_from and &m_upper == &parOther.m_upper);
+		assert(&m_seq.from() == &parOther.m_seq.from() and &m_seq.upper() == &parOther.m_seq.upper());
 		return m_current == parOther.m_current;
 	}
 
@@ -194,24 +197,34 @@ namespace vwr {
 	sequence_range<V, OP, CMP, I...>::sequence_range (const V& parFrom, const V& parUpper) :
 		m_from(parFrom),
 		m_upper(parUpper),
-		m_end(implem::make_end_vector<V, I...>(parFrom, parUpper))
+		m_end(implem::make_end_vector<V, I...>(parFrom, parUpper)),
+		m_step(1)
+	{
+	}
+
+	template <typename V, typename OP, typename CMP, size_type... I>
+	sequence_range<V, OP, CMP, I...>::sequence_range (const V& parFrom, const V& parUpper, const V& parStep) :
+		m_from(parFrom),
+		m_upper(parUpper),
+		m_end(implem::make_end_vector<V, I...>(parFrom, parUpper)),
+		m_step(parStep)
 	{
 	}
 
 	template <typename V, typename OP, typename CMP, size_type... I>
 	auto sequence_range<V, OP, CMP, I...>::cbegin() const -> const_iterator {
-		return sequence_range_iterator<V, OP, CMP, I...>(m_from, m_upper);
+		return sequence_range_iterator<V, OP, CMP, I...>(*this);
 	}
 
 	template <typename V, typename OP, typename CMP, size_type... I>
 	auto sequence_range<V, OP, CMP, I...>::cend() const -> const_iterator {
-		return sequence_range_iterator<V, OP, CMP, I...>(m_end, m_from, m_upper);
+		return sequence_range_iterator<V, OP, CMP, I...>(m_end, *this);
 	}
 
 	template <typename V>
 	using increasing_sequence_range = typename implem::make_sequence_helper<
 		typename V::vector_type,
-		op::inc<typename V::scalar_type>,
+		std::plus<typename V::scalar_type>,
 		std::less<typename V::scalar_type>,
 		bt::number_range<size_type, 0, V::dimensions>
 	>::type;
