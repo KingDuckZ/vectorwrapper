@@ -82,4 +82,16 @@ TEST(vwr, vector_iterator) {
 			EXPECT_EQ(expected[z] + 1, results[results.size() - 1 - z]);
 		}
 	}
+
+	{
+		auto seq = increasing_sequence_range<ivec3>(from, to, ivec3(3));
+		std::vector<ivec3> results;
+		for (auto& itm : seq) {
+			results.push_back(itm);
+		}
+
+		ASSERT_EQ(2, results.size());
+		EXPECT_EQ(ivec3(100, 200, 300), results[0]);
+		EXPECT_EQ(ivec3(100, 200, 303), results[1]);
+	}
 }

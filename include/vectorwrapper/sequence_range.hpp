@@ -83,6 +83,7 @@ namespace vwr {
 	private:
 		V m_current;
 		const sequence_range_type& m_seq;
+		size_type m_active_elem;
 	};
 
 	template <typename V, typename OP, typename CMP, size_type... I>
@@ -118,10 +119,14 @@ namespace vwr {
 	namespace implem {
 		template <size_type SEEK, size_type IDX, size_type... I>
 		struct get_at_index;
-		template <size_type SEEK, size_type IDX, size_type I>
-		struct get_at_index<SEEK, IDX, I> {
-			static_assert(SEEK == IDX, "Index out of range");
-			static constexpr size_type value = I;
+		template <size_type N>
+		struct get_at_index<N, N> {
+			static constexpr size_type value = N;
+		};
+		template <size_type SEEK, size_type IDX>
+		struct get_at_index<SEEK, IDX> {
+			static_assert(SEEK < IDX, "Index out of range");
+			static constexpr size_type value = 0;
 		};
 		template <size_type SEEK, size_type IDX, size_type L, size_type... I>
 		struct get_at_index<SEEK, IDX, L, I...> {
@@ -155,7 +160,8 @@ namespace vwr {
 	template <typename V, typename OP, typename CMP, size_type... I>
 	sequence_range_iterator<V, OP, CMP, I...>::sequence_range_iterator (const V& parCurrent, const sequence_range_type& parSeq) :
 		m_current(parCurrent),
-		m_seq(parSeq)
+		m_seq(parSeq),
+		m_active_elem(implem::get_at_index<0, 0, I...>::value)
 	{
 	}
 
@@ -174,6 +180,7 @@ namespace vwr {
 				m_current[index] = m_seq.from()[index];
 				index = lst[count++];
 				m_current[index] = advance_op(m_current[index], m_seq.step()[index]);
+				m_active_elem = index;
 			} while (count < sizeof...(I) and not cmp_op(m_current[index], m_seq.upper()[index]));
 		}
 
@@ -182,14 +189,17 @@ namespace vwr {
 
 	template <typename V, typename OP, typename CMP, size_type... I>
 	bool sequence_range_iterator<V, OP, CMP, I...>::operator!= (const sequence_range_iterator& parOther) const {
-		assert(&m_seq.from() == &parOther.m_seq.from() and &m_seq.upper() == &parOther.m_seq.upper());
-		return m_current != parOther.m_current;
+		return not this->operator==(parOther);
 	}
 
 	template <typename V, typename OP, typename CMP, size_type... I>
 	bool sequence_range_iterator<V, OP, CMP, I...>::operator== (const sequence_range_iterator& parOther) const {
 		assert(&m_seq.from() == &parOther.m_seq.from() and &m_seq.upper() == &parOther.m_seq.upper());
-		return m_current == parOther.m_current;
+		const CMP& cmp_op = *static_cast<const CMP*>(this);
+		return m_current == parOther.m_current or (
+			implem::get_at_index<sizeof...(I) - 1, 0, I...>::value == m_active_elem and
+			not cmp_op(m_current[m_active_elem], m_seq.upper()[m_active_elem])
+		);
 	}
 
 	template <typename V, typename OP, typename CMP, size_type... I>
